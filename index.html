@@ -73,6 +73,16 @@ li+li{margin-top:.35rem}
 .tabs a.cta{background:var(--tactile);color:var(--tactile-ink);font-weight:600}
 .tabs a.cta[aria-current="page"]{outline:2px solid #fff}
 @media (min-width:1000px){.tabs{flex-basis:auto;order:0;margin-inline:0}.brand{margin-right:0}.tools{margin-left:auto}}
+.menu-btn{display:none;align-items:center;gap:.55rem;font:600 1rem/1 var(--f-body);color:#000;background:#fff;border:0;border-radius:6px;padding:.6rem .85rem;cursor:pointer}
+.menu-btn .bars{width:1.1rem;height:.8rem;background:linear-gradient(#000 0 2px,transparent 2px 5px,#000 5px 7px,transparent 7px 10px,#000 10px 12px);background-size:100% 12px;background-repeat:no-repeat;background-position:0 50%}
+.top.open .menu-btn .bars{background:linear-gradient(45deg,transparent 45%,#000 45% 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,#000 45% 55%,transparent 55%)}
+@media (max-width:999px){
+  .menu-btn{display:inline-flex}
+  .tabs{display:none;flex-direction:column;gap:.2rem;overflow:visible;margin:0;padding:.4rem 0 1rem;border-top:1px solid #333}
+  .top.open .tabs{display:flex}
+  .tabs a{font-size:1.1rem;padding:.8rem .9rem;white-space:normal}
+  .tabs a.cta{margin-top:.4rem;text-align:center}
+}
 
 /* views */
 .view{padding-block:2.5rem 4rem}
@@ -310,6 +320,7 @@ body{top:0!important}
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#home" aria-label="Disability Visibility India, home"><span class="mark" aria-hidden="true"></span><span>Disability Visibility India</span></a>
+    <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="tabs"><span class="bars" aria-hidden="true"></span>Menu</button>
     <nav class="tabs" aria-label="Main" id="tabs">
       <a href="#home">Home</a>
       <a href="#learn">Learn</a>
@@ -873,7 +884,13 @@ function route(first){
     else { const h = $("#v-"+v+" h1"); h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }
   }
 }
-window.addEventListener("hashchange", () => route(false));
+window.addEventListener("hashchange", () => { closeMenu(); route(false); });
+
+/* ---------- phone menu ---------- */
+function closeMenu(){ $(".top").classList.remove("open"); $("#menu-btn").setAttribute("aria-expanded","false"); }
+$("#menu-btn").addEventListener("click", () => { const open = !$(".top").classList.contains("open"); $(".top").classList.toggle("open", open); $("#menu-btn").setAttribute("aria-expanded", String(open)); if(open){ const a = $("#tabs a"); if(a) a.focus(); } });
+$("#tabs").addEventListener("click", e => { if(e.target.closest("a")) closeMenu(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && $(".top").classList.contains("open")){ closeMenu(); $("#menu-btn").focus(); } });
 
 /* ---------- learn ---------- */
 $("#list21").innerHTML = DIS21.map(d => `<li>${esc(d)}</li>`).join("");
