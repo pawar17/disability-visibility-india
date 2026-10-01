@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Disability Visibility India</title>
+<meta name="description" content="A toolkit, news desk and action hub for disabled people and families in India.">
+<link rel="icon" type="image/png" href="icon.png">
+<style>
+/* Layout: tabbed civic site. Navy ink, blue links, and the yellow tactile-paving strip from Indian metro platforms as the one graphic motif. System fonts only (San Francisco on Apple devices). Thin hairlines, no heavy rules. Black header. Every multi-column block collapses to one column on narrow screens. */
+:root{
+  --paper:#F5F6F1; --surface:#FFFFFF; --sunk:#ECEEE6;
+  --ink:#0F1E3D; --muted:#3B4458; --line:#E1E4EA;
+  --blue:#8A1C14; --blue-ink:#FFFFFF; --tactile:#F2C10A; --tactile-ink:#1C1600;
+  --ok:#17663F; --bad:#A3231B; --alert:#B3261E; --alert-ink:#FFFFFF; --focus:#8A1C14;
+  --f-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --f-deva:"Kohinoor Devanagari","Noto Sans Devanagari","Nirmala UI",-apple-system,sans-serif;
+  --sos-bg:#FCEBEA; --sos-ink:#8A1C14;
+  --base:17px; --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0B1326; --surface:#121C34; --sunk:#18233F; --ink:#F1F3F8; --muted:#C3C9D6; --line:#26314D; --sos-bg:#2E1513; --sos-ink:#FFB4AB;
+  --blue:#FF9C90; --blue-ink:#0B1326; --ok:#6FD39E; --bad:#FF9A90; --alert:#C9372C; --focus:#F2C10A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0B1326; --surface:#121C34; --sunk:#18233F; --ink:#F1F3F8; --muted:#C3C9D6; --line:#26314D; --sos-bg:#2E1513; --sos-ink:#FFB4AB;
+  --blue:#FF9C90; --blue-ink:#0B1326; --ok:#6FD39E; --bad:#FF9A90; --alert:#C9372C; --focus:#F2C10A; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{font-size:var(--base)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-weight:450;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+strong,b{font-weight:650}
+img{max-width:100%}
+a{color:var(--blue);text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+h1,h2,h3,h4{line-height:1.15;margin:0;text-wrap:balance;font-weight:700}
+h1{font-size:clamp(2rem,1.3rem + 3.2vw,3.5rem);letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,1.15rem + 1.6vw,2.15rem);letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:600}
+h4{font-size:1.02rem;font-weight:600}
+p{margin:0}
+ul,ol{margin:0;padding-left:1.25rem}
+li+li{margin-top:.35rem}
+.wrap{max-width:70rem;margin:0 auto;padding-inline:clamp(1rem,3vw,2rem)}
+.measure{max-width:40rem}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.num{font-variant-numeric:tabular-nums}
+.lead{font-size:clamp(1.02rem,.95rem + .4vw,1.18rem);color:var(--muted);max-width:42rem}
+.stack>*+*{margin-top:1rem}
+.skip{position:absolute;left:-999px;top:0;background:var(--tactile);color:var(--tactile-ink);padding:.6rem 1rem;z-index:50;font-weight:600}
+.skip:focus{left:1rem;top:calc(env(safe-area-inset-top,0px) + .5rem)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+/* tactile strips */
+.tactile{height:20px;background-color:var(--tactile);background-image:radial-gradient(circle at 50% 50%,rgba(0,0,0,.22) 0 3px,transparent 3.4px);background-size:15px 15px;background-position:3px 2px}
+.tactile.guide{background-image:repeating-linear-gradient(90deg,transparent 0 5px,rgba(0,0,0,.22) 5px 9px,transparent 9px 15px)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#000;color:#fff}
+.top .wrap{display:flex;align-items:center;gap:.8rem 1rem;padding-block:.55rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:#fff;font-weight:700;line-height:1.05;font-size:1.02rem;margin-right:auto}
+.mark{width:1.9rem;height:2.3rem;background:#fff;-webkit-mask:url(logo-mark.png) center/contain no-repeat;mask:url(logo-mark.png) center/contain no-repeat;flex-shrink:0}
+.brand small{display:block;font-weight:450;font-size:.75rem;color:#BDBDBD}
+.tools{display:flex;align-items:center;gap:.4rem}
+.tools button{font:600 .8rem/1 var(--f-body);border:1px solid #444;background:#111;color:#fff;border-radius:6px;padding:.4rem .5rem;cursor:pointer;min-width:2.2rem}
+#gt{display:flex;align-items:center}
+.tabs{display:flex;gap:.15rem;overflow-x:auto;scrollbar-width:none;flex-basis:100%;order:3;margin-inline:-.4rem;padding-bottom:.1rem}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{color:#fff;text-decoration:none;padding:.45rem .7rem;border-radius:6px;white-space:nowrap;font-size:.95rem;font-weight:550}
+.tabs a:hover{background:#222}
+.tabs a[aria-current="page"]{background:#fff;color:#000}
+.tabs a.cta{background:var(--tactile);color:var(--tactile-ink);font-weight:600}
+.tabs a.cta[aria-current="page"]{outline:2px solid #fff}
+@media (min-width:1000px){.tabs{flex-basis:auto;order:0;margin-inline:0}.brand{margin-right:0}.tools{margin-left:auto}}
+
+/* views */
+.view{padding-block:2.5rem 4rem}
+.view[hidden]{display:none}
+.page-head{display:grid;gap:.7rem;margin-bottom:2rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:2.5rem}
+.main-side{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:2.5rem}
+.side-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.3fr);gap:2.5rem}
+@media (max-width:860px){.main-side,.side-main{grid-template-columns:minmax(0,1fr);gap:2rem}}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font:600 1rem/1 var(--f-body);padding:.85rem 1.15rem;border-radius:8px;border:2px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;cursor:pointer}
+.btn:hover{filter:brightness(1.15)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.yellow{background:var(--tactile);border-color:var(--tactile);color:var(--tactile-ink)}
+.btn.small{padding:.55rem .8rem;font-size:.9rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.5rem}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:clamp(1rem,2.5vw,1.4rem)}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.03em;padding:.2rem .5rem;border-radius:4px;background:var(--sunk);color:var(--muted)}
+.tag.ruling{background:#000;color:#fff}
+.tag.policy{background:var(--tactile);color:#000}
+.tag.data{background:#8A1C14;color:#fff}
+.tag.news{background:#fff;color:#8A1C14;box-shadow:inset 0 0 0 1.5px #8A1C14}
+
+/* home */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:end}
+@media (max-width:860px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(2.2rem,1.3rem + 3.8vw,3.9rem);line-height:1.04}
+.hi-line{font-family:var(--f-deva);font-size:1.25rem;margin-top:.8rem;color:var(--muted)}
+.stats{border-top:1px solid var(--line)}
+.stat{display:grid;grid-template-columns:minmax(6.5rem,auto) minmax(0,1fr);gap:.15rem 1rem;padding-block:.85rem;border-bottom:1px solid var(--line);align-items:baseline}
+.stat b{font-size:clamp(1.4rem,1.1rem + 1vw,1.8rem);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat span{font-size:.93rem}
+.stat a{grid-column:2;font-size:.78rem;color:var(--muted)}
+@media (max-width:420px){.stat{grid-template-columns:minmax(0,1fr)}.stat a{grid-column:1}}
+.sos{background:var(--sos-bg);color:var(--ink);border-radius:var(--r);padding:clamp(1.2rem,3vw,1.8rem);display:grid;gap:1.2rem;margin-top:2.5rem}
+.sos h2{color:var(--sos-ink);font-size:clamp(1.35rem,1.1rem + 1vw,1.75rem)}
+.sos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:1.4rem 2rem}
+.sos-item{display:grid;gap:.2rem;align-content:start}
+.sos-item b{font-size:clamp(2rem,1.5rem + 1.6vw,2.6rem);font-weight:750;line-height:1.05;color:var(--sos-ink);font-variant-numeric:tabular-nums}
+.sos-item b.sm{font-size:1.1rem;padding-block:.5rem .2rem;word-break:break-word}
+.sos-item span{font-size:.98rem;font-weight:500}
+.sos-item a{color:var(--sos-ink);font-weight:700}
+.sos p{font-size:.95rem;font-weight:500}
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+.path{display:grid;gap:.5rem;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.2rem;align-content:start}
+.path:hover{border-color:var(--ink)}
+.path .n{font-weight:700;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--tactile);color:var(--tactile-ink);display:grid;place-items:center}
+.path strong{font-size:1.15rem;font-weight:600}
+.path span{color:var(--muted)}
+.story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(1.5rem,4vw,3rem);align-items:center}
+.story img{width:100%;border-radius:var(--r);aspect-ratio:3/2;object-fit:cover;object-position:50% 30%;display:block}
+@media (max-width:760px){.story{grid-template-columns:minmax(0,1fr)}}
+.latest{list-style:none;padding:0;border-top:1px solid var(--line)}
+.latest li{margin:0;padding:.85rem 0;border-bottom:1px solid var(--line);display:grid;gap:.25rem}
+.latest .when{font-size:.85rem;color:var(--muted);margin-left:.4rem}
+
+/* learn */
+.def{display:grid;gap:.9rem;font-size:1.05rem;font-weight:500}
+.list21{columns:2 12rem;column-gap:1.5rem;padding:0;list-style:none;counter-reset:d}
+.list21 li{break-inside:avoid;padding:.45rem 0;border-bottom:1px solid var(--line);counter-increment:d;display:flex;gap:.7rem;margin:0;font-weight:550}
+.list21 li::before{content:counter(d);color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;min-width:1.5rem}
+input[type=search],input[type=text],input[type=email],input[type=number],input[type=url],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:.65rem .75rem;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 30%,transparent)}
+label{display:grid;gap:.25rem;font-size:.9rem;font-weight:600}
+.check{display:flex;gap:.55rem;align-items:flex-start;font-weight:400;font-size:.9rem}
+.check input{width:1.15rem;height:1.15rem;margin-top:.2rem;flex-shrink:0;accent-color:var(--blue)}
+.conds{display:grid;gap:.6rem}
+details.cond{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+details.cond summary{list-style:none;cursor:pointer;padding:1rem 1.1rem;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.15rem 1rem;align-items:center}
+details.cond summary::-webkit-details-marker{display:none}
+details.cond summary h3{font-size:1.08rem}
+details.cond summary .cat{grid-column:1;font-size:.85rem;color:var(--muted)}
+details.cond summary .plus{grid-row:1/3;grid-column:2;font-size:1.3rem;width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;background:var(--sunk)}
+details.cond[open] summary .plus{background:var(--tactile);color:var(--tactile-ink)}
+details.cond[open] summary .plus::after{content:"–"} details.cond:not([open]) summary .plus::after{content:"+"}
+.cond-body{padding:0 1.1rem 1.2rem;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+.cond-body .side{background:var(--sunk);border-radius:8px;padding:.9rem 1rem;display:grid;gap:.6rem;align-content:start;font-size:.93rem}
+.myth{background:var(--ink);color:var(--paper);border-radius:var(--r);padding:clamp(1.1rem,3vw,1.6rem);display:grid;gap:1rem;min-height:15rem;align-content:start}
+.myth .label{font-size:.85rem;opacity:.75}
+.myth .m{font-size:1.3rem;font-weight:700;text-decoration:line-through;text-decoration-color:var(--tactile);text-decoration-thickness:3px}
+.myth .row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:auto}
+.myth .btn.ghost{color:var(--paper);border-color:var(--paper)}
+.myth .btn.yellow{border-color:var(--tactile)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.85rem;color:var(--muted);font-weight:650}
+.words td:first-child{color:var(--bad);text-decoration:line-through}
+.words td:nth-child(2){color:var(--ok);font-weight:600}
+.words{min-width:30rem}
+
+/* toolkit */
+.steps{list-style:none;padding:0;border-top:1px solid var(--line);counter-reset:s}
+.steps>li{display:grid;grid-template-columns:3rem minmax(0,1fr) minmax(0,1.1fr);gap:1.2rem;padding-block:1.3rem;border-bottom:1px solid var(--line);counter-increment:s;margin:0}
+.steps>li::before{content:counter(s);font-size:1.3rem;font-weight:700;width:2.5rem;height:2.5rem;border-radius:50%;background:var(--tactile);color:var(--tactile-ink);display:grid;place-items:center}
+@media (max-width:760px){.steps>li{grid-template-columns:2.5rem minmax(0,1fr)}.steps>li>ul{grid-column:2}}
+.filters{display:flex;flex-wrap:wrap;gap:.45rem;margin:1rem 0}
+.filters button{font:500 .88rem/1 var(--f-body);border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:.5rem .75rem;border-radius:999px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.dir{min-width:34rem}
+
+/* news */
+.news{border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:1.2rem;padding-block:1.3rem;border-bottom:1px solid var(--line)}
+.item time{font-size:.88rem;color:var(--muted);padding-top:.15rem;font-variant-numeric:tabular-nums}
+.item .body{display:grid;gap:.45rem;max-width:44rem}
+.item .why{font-size:.94rem;background:var(--sunk);border-radius:6px;padding:.55rem .75rem}
+@media (max-width:600px){.item{grid-template-columns:minmax(0,1fr);gap:.3rem}}
+
+/* ideas */
+.idea-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));gap:1.1rem}
+.idea-card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
+.idea-card:hover{border-color:var(--ink)}
+.idea-card:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.route{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;background:var(--ink);color:var(--paper);font-size:.85rem;font-weight:600}
+.route i{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--tactile) 0 6px,transparent 6px 10px);font-style:normal}
+.route .in{color:var(--tactile)}
+.idea-card .in-card{padding:1.1rem 1rem;display:grid;gap:.6rem;align-content:start}
+.idea-card .ttl{font-size:1.15rem;font-weight:700;line-height:1.25;color:var(--ink)}
+.idea-card .sum{color:var(--muted);font-size:.95rem}
+.big{font-weight:700;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.idea-card .stat-line{display:grid;gap:.15rem;border-top:1px dashed var(--line);padding-top:.6rem}
+.idea-card .go{padding:.75rem 1rem;border-top:1px solid var(--line);font-weight:600;color:var(--blue)}
+.detail{display:grid;gap:2.2rem}
+.d-hero{background:var(--ink);color:var(--paper);border-radius:var(--r);padding:clamp(1.3rem,4vw,2.4rem);display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:1.5rem 2.5rem;align-items:end}
+.d-hero h2{color:var(--paper);font-size:clamp(1.7rem,1.3rem + 2vw,2.6rem)}
+.d-hero .from{font-size:1rem;font-weight:600;color:var(--tactile)}
+.d-hero p{font-size:1.1rem;opacity:.95}
+.d-hero .bignum{font-size:clamp(2.6rem,2rem + 3vw,4rem);font-weight:750;line-height:1;color:var(--tactile);font-variant-numeric:tabular-nums}
+@media (max-width:760px){.d-hero{grid-template-columns:minmax(0,1fr)}}
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1rem}
+.compare>div{border-radius:var(--r);padding:1.4rem;display:grid;gap:.6rem;align-content:start}
+.compare .there{background:#F7E4E1;color:#0F1E3D}
+.compare .here{background:#FDF3CF;color:#0F1E3D}
+.compare h3{font-size:1.2rem}
+.compare p{font-size:1.05rem;font-weight:500;max-width:36rem}
+.road{list-style:none;padding:0;counter-reset:p;display:grid;gap:0}
+.road li{counter-increment:p;display:grid;grid-template-columns:2.6rem minmax(0,1fr);gap:1rem;margin:0;padding-bottom:1.2rem;position:relative;font-size:1.05rem;font-weight:500}
+.road li::before{content:counter(p);font-weight:750;width:2.6rem;height:2.6rem;border-radius:50%;background:var(--tactile);color:var(--tactile-ink);display:grid;place-items:center;position:relative;z-index:1}
+.road li:not(:last-child)::after{content:"";position:absolute;left:1.25rem;top:2.6rem;bottom:0;width:2px;background:var(--line)}
+.road li span{padding-top:.45rem}
+.who{display:flex;flex-wrap:wrap;gap:.5rem}
+.who span{background:var(--sunk);padding:.45rem .8rem;border-radius:999px;font-weight:550}
+.lobby{background:var(--tactile);color:var(--tactile-ink);border-radius:var(--r);padding:clamp(1.3rem,4vw,2rem);display:grid;grid-template-columns:minmax(0,1.5fr) auto;gap:1rem 2rem;align-items:center}
+.lobby h2{color:var(--tactile-ink);font-size:clamp(1.4rem,1.15rem + 1.2vw,1.9rem)}
+.lobby p{font-weight:500}
+.lobby .count{font-size:2.4rem;font-weight:750;line-height:1;font-variant-numeric:tabular-nums}
+.lobby .btn{background:var(--tactile-ink);border-color:var(--tactile-ink);color:var(--tactile)}
+@media (max-width:700px){.lobby{grid-template-columns:minmax(0,1fr)}}
+.prevnext{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-top:.5rem}
+.pet-group{font-size:.85rem;font-weight:650;color:var(--muted);margin:1rem 0 .2rem}
+.pet-group:first-child{margin-top:0}
+
+/* petitions */
+details.law{background:var(--sunk);border:0;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1.5rem}
+details.law summary{cursor:pointer;font-weight:700}
+details.law ul{margin-top:.8rem}
+details.law p{margin-top:.8rem}
+.pet-list{list-style:none;padding:0;display:grid;gap:.5rem;align-content:start}
+.pet-list li{margin:0}
+.pet-list button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:.2rem;padding:.9rem 1rem;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.pet-list button strong{font-weight:600}
+.pet-list button span{color:var(--muted);font-size:.88rem}
+.pet-list button[aria-current="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pet-list button[aria-current="true"] span{color:var(--paper);opacity:.85}
+.pet-list button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.pet-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pet-top{padding:clamp(1.1rem,3vw,1.5rem);display:grid;gap:.6rem}
+.pet-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.pet-main{padding:0 clamp(1.1rem,3vw,1.5rem) 1.5rem;display:grid;gap:1.1rem;align-content:start}
+.pet-side{background:var(--sunk);padding:1.3rem clamp(1.1rem,3vw,1.5rem);display:grid;gap:1rem;align-content:start;border-left:1px solid var(--line)}
+@media (max-width:900px){.pet-grid{grid-template-columns:minmax(0,1fr)}.pet-side{border-left:0;border-top:1px solid var(--line)}}
+.meter .n{font-size:2rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:.4rem}
+.bar i{display:block;height:100%;background:var(--tactile);width:0;transition:width .6s ease}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+form.f{display:grid;gap:.6rem}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:.6rem}
+.hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
+.status{font-size:.9rem;min-height:1.2rem}
+.status.ok{color:var(--ok);font-weight:600}
+.status.bad{color:var(--bad);font-weight:600}
+.wall{display:flex;flex-wrap:wrap;gap:.35rem;font-size:.85rem}
+.wall span{background:var(--surface);border:1px solid var(--line);padding:.25rem .5rem;border-radius:5px}
+.thanks{background:var(--ok);color:var(--paper);padding:.8rem 1rem;border-radius:8px;font-weight:600}
+
+/* give */
+.give-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:2.5rem;align-items:start}
+@media (max-width:860px){.give-intro{grid-template-columns:minmax(0,1fr)}}
+.give-note{background:var(--ink);color:var(--paper);border-radius:var(--r);padding:clamp(1.2rem,3vw,1.6rem);display:grid;gap:.8rem}
+.give-note h2{color:var(--paper);font-size:1.5rem}
+.give-note li{color:var(--paper)}
+.causes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,16rem),1fr));gap:1rem}
+.cause{background:var(--surface);border-radius:var(--r);padding:1.2rem;display:grid;gap:.5rem;align-content:start;box-shadow:0 1px 3px rgba(15,30,61,.08)}
+.cause h3{font-size:1.15rem}
+.cause .where{font-size:.88rem;color:var(--muted)}
+.cause .btn{justify-self:start;margin-top:.4rem}
+/* about */
+.collage{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5rem}
+.collage img{width:100%;display:block;object-fit:cover;border-radius:6px}
+.collage .a{grid-column:span 3;grid-row:span 2;height:100%}
+.collage .b,.collage .c{grid-column:span 3;aspect-ratio:16/9}
+.collage .d,.collage .e,.collage .f{grid-column:span 2;aspect-ratio:3/4}
+@media (max-width:600px){.collage{grid-template-columns:repeat(2,minmax(0,1fr))}.collage .a{grid-column:span 2;grid-row:auto;aspect-ratio:4/3;height:auto}.collage .b,.collage .c,.collage .d,.collage .e{grid-column:span 1;aspect-ratio:1}.collage .f{display:none}}
+.facts{list-style:none;padding:0;border-top:1px solid var(--line)}
+.facts li{padding:.6rem 0;border-bottom:1px solid var(--line);margin:0}
+.facts b{display:block;font-size:.8rem;color:var(--muted);font-weight:600}
+
+/* admin */
+.panel+.panel{margin-top:1.6rem}
+.panel table{min-width:42rem;font-size:.88rem}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:.7rem;margin-top:.8rem}
+
+.foot{background:#000;color:#fff;padding-block:2.2rem}
+.foot a{color:var(--tactile)}
+.foot .wrap{display:grid;gap:1rem}
+.foot .links{display:flex;flex-wrap:wrap;gap:1rem}
+.foot p{max-width:46rem;font-size:.9rem;opacity:.9}
+.foot .brand{color:#fff}
+.foot .mark{background:#fff}
+
+/* Google Translate widget */
+.goog-te-gadget{font-size:0!important;color:transparent!important}
+.goog-te-gadget .goog-te-combo{font:500 .82rem var(--f-body)!important;margin:0!important;padding:.3rem;border-radius:6px;border:1px solid var(--line)}
+.goog-logo-link,.goog-te-gadget>span{display:none!important}
+body{top:0!important}
+.skiptranslate iframe{display:none!important}
+</style>
+</head>
+<body>
+
+
+<a class="skip" href="#main-content">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Disability Visibility India, home"><span class="mark" aria-hidden="true"></span><span>Disability Visibility India</span></a>
+    <nav class="tabs" aria-label="Main" id="tabs">
+      <a href="#home">Home</a>
+      <a href="#learn">Learn</a>
+      <a href="#toolkit">Toolkit</a>
+      <a href="#news">Rulings &amp; news</a>
+      <a href="#ideas">Ideas from abroad</a>
+      <a href="#give">Give</a>
+      <a href="#about">About me</a>
+      <a href="#act" class="cta">Sign a petition</a>
+    </nav>
+    <div class="tools">
+      <div id="gt" aria-label="Translate this page"></div>
+      <button type="button" id="ts-down" aria-label="Smaller text">A−</button>
+      <button type="button" id="ts-up" aria-label="Larger text">A+</button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content" tabindex="-1">
+
+<!-- HOME -->
+<section class="view hero" id="v-home" data-view="home" aria-labelledby="h-home">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1 id="h-home">Disability is part of India. Let’s make it visible.</h1>
+        <p class="hi-line" lang="hi">दिखें, सुने जाएँ, गिने जाएँ।</p>
+        <p class="lead" style="margin-top:1rem">Plain-language guides to every disability the law recognises, your rights and schemes, the latest court rulings, ideas worth bringing home, and petitions you can sign today.</p>
+        <div class="actions">
+          <a class="btn yellow" href="#act">Sign a petition</a>
+          <a class="btn ghost" href="#toolkit">Help after a diagnosis</a>
+        </div>
+      </div>
+      <div class="stats" aria-label="Key numbers">
+        <div class="stat"><b>2.68 cr</b><span>people with disabilities counted in Census 2011, or 2.21% of India. Advocates say this is a large undercount.</span><a href="https://censusindia.gov.in/" target="_blank" rel="noopener">Census of India 2011</a></div>
+        <div class="stat"><b>~1.8 cr</b><span>estimated deaf and hard-of-hearing Indians. The 2011 census counted about 50 lakh.</span><a href="https://www.cam.ac.uk/research/news/make-indian-sign-language-official-language-and-open-more-schools-for-deaf-and-hard-of-hearing" target="_blank" rel="noopener">University of Cambridge, Mar 2025</a></div>
+        <div class="stat"><b>87.6 lakh</b><span>UDID disability cards issued, out of 1.15 crore applications since 2021.</span><a href="https://salarnews.in/national-news/details/50100" target="_blank" rel="noopener">Rajya Sabha reply, Aug 2026</a></div>
+        <div class="stat"><b>₹300</b><span>a month: the Centre’s disability pension, unchanged since 2012.</span><a href="https://www.downtoearth.org.in/governance/poor-elderly-widows-and-disabled-people-spend-much-of-their-pension-on-food-and-treatment-study-finds" target="_blank" rel="noopener">Down To Earth, May 2026</a></div>
+      </div>
+    </div>
+
+    <section class="sos" aria-labelledby="sos-h">
+      <h2 id="sos-h">Need help right now?</h2>
+      <div class="sos-grid">
+        <div class="sos-item"><b>112</b><span>Police, fire or ambulance, anywhere in India, 24×7</span></div>
+        <div class="sos-item"><b>14416</b><span>Tele-MANAS: free mental health support in Indian languages, 24×7. Also 1-800-891-4416</span></div>
+        <div class="sos-item"><b class="sm"><a href="https://ccpd.nic.in/" target="_blank" rel="noopener">ccpd.nic.in</a></b><span>Report disability discrimination to the Chief Commissioner for Persons with Disabilities</span></div>
+        <div class="sos-item"><b class="sm"><a href="https://www.swavlambancard.gov.in/" target="_blank" rel="noopener">swavlambancard.gov.in</a></b><span>Apply for a disability certificate and UDID card online</span></div>
+      </div>
+      <p>If someone is having a seizure for more than 5 minutes, call 112. Turn them on their side and don’t put anything in their mouth.</p>
+    </section>
+  </div>
+
+  <div class="tactile" aria-hidden="true" style="margin-top:3rem"></div>
+
+  <div class="wrap" style="padding-top:3rem">
+    <h2 style="margin-bottom:1.2rem">Where do you want to start?</h2>
+    <nav class="paths" aria-label="Where to start">
+      <a class="path" href="#toolkit"><span class="n" aria-hidden="true">1</span><strong>We just got a diagnosis</strong><span>Certificates, therapy, schemes and your rights, step by step.</span></a>
+      <a class="path" href="#learn"><span class="n" aria-hidden="true">2</span><strong>I want to understand</strong><span>The 21 disabilities in Indian law, common myths and respectful words.</span></a>
+      <a class="path" href="#act"><span class="n" aria-hidden="true">3</span><strong>I want to change things</strong><span>Four petitions, each with a plan. Add your name.</span></a>
+    </nav>
+
+    <div class="story" style="margin-top:3.5rem">
+      <img src="p2.jpg" alt="Aadya and her brother Aadi as children, cheek to cheek and smiling.">
+      <div class="stack">
+        <h2>It started with my brother, Aadi</h2>
+        <p>When Aadi was diagnosed with cerebral palsy, my family couldn’t find clear information written for Indian families. We pieced it together ourselves. This site is what we wished we’d had.</p>
+        <p><a href="#about">Read my story and get in touch</a></p>
+      </div>
+    </div>
+
+    <div style="margin-top:3.5rem">
+      <h2 style="margin-bottom:1rem">Latest rulings and news</h2>
+      <ul class="latest" id="home-latest"></ul>
+      <p style="margin-top:1rem"><a href="#news">See all rulings and news</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- LEARN -->
+<section class="view" id="v-learn" data-view="learn" aria-labelledby="h-learn" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-learn">What the law counts as disability</h1></div>
+    <div class="grid2">
+      <div class="def measure">
+        <p>Under the <strong>Rights of Persons with Disabilities (RPwD) Act, 2016</strong>, a person with disability has a long-term physical, mental, intellectual or sensory impairment that, together with barriers around them, stops them from taking part in society on an equal basis with others.</p>
+        <p>The key idea is the second half. Stairs without a ramp, a website a screen reader can’t read, a classroom without sign language: the barrier is often the bigger problem.</p>
+        <p>A <strong>benchmark disability</strong> is 40% or more of a specified disability, certified by a government medical authority. It unlocks reservations in jobs and education, and many schemes.</p>
+      </div>
+      <div><h3 style="margin-bottom:.8rem">The 21 specified disabilities</h3><ol class="list21" id="list21"></ol></div>
+    </div>
+
+    <div style="margin-top:3rem">
+      <h2>Guides to common conditions</h2>
+      <p class="muted small" style="margin-top:.3rem">Information only, not medical advice. Please see a doctor or therapist for diagnosis and treatment.</p>
+      <label for="cond-q" style="margin:1.2rem 0;max-width:22rem">Search conditions<input id="cond-q" type="search" placeholder="e.g. autism, seizures, reading" autocomplete="off"></label>
+      <div class="conds" id="conds"></div>
+    </div>
+
+    <div class="grid2" style="margin-top:3.5rem">
+      <div>
+        <h2>Myth or fact?</h2>
+        <p class="muted" style="margin-block:.4rem 1rem">Stigma in India often rests on a few old beliefs. Here is what’s true.</p>
+        <div class="myth" aria-live="polite">
+          <span class="label" id="myth-count"></span>
+          <p class="m" id="myth-m"></p>
+          <p id="myth-f"></p>
+          <div class="row"><button type="button" class="btn ghost small" id="myth-prev">Previous</button><button type="button" class="btn yellow small" id="myth-next">Next myth</button></div>
+        </div>
+      </div>
+      <div>
+        <h2>Words that respect people</h2>
+        <p class="muted" style="margin-block:.4rem 1rem">When in doubt, ask the person what they prefer.</p>
+        <div class="scroll"><table class="words"><thead><tr><th scope="col">Avoid</th><th scope="col">Say instead</th><th scope="col">Why</th></tr></thead><tbody id="words"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLKIT -->
+<section class="view" id="v-toolkit" data-view="toolkit" aria-labelledby="h-toolkit" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-toolkit">After a diagnosis: what to do, in order</h1><p class="lead">When my brother was diagnosed, we pieced this together over months. Here it is in one place.</p></div>
+    <ol class="steps" id="steps"></ol>
+    <div style="margin-top:3rem">
+      <h2>Directory of organisations</h2>
+      <div class="filters" id="dir-filter" role="group" aria-label="Filter organisations by disability"></div>
+      <div class="scroll"><table class="dir"><thead><tr><th scope="col">Organisation</th><th scope="col">Focus</th><th scope="col">Type</th><th scope="col">Where</th></tr></thead><tbody id="dir"></tbody></table></div>
+      <p class="muted small" style="margin-top:.6rem">Know an organisation we should add? <a href="#about">Tell me</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="view" id="v-news" data-view="news" aria-labelledby="h-news" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-news">What courts and government decided recently</h1><p class="lead">Each item links to the original report.</p></div>
+    <div class="filters" id="news-filter" role="group" aria-label="Filter news"></div>
+    <div class="news" id="news-list"></div>
+  </div>
+</section>
+
+<!-- IDEAS -->
+<section class="view" id="v-ideas" data-view="ideas" aria-labelledby="h-ideas" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-ideas">Ideas that work elsewhere, and how India could use them</h1><p class="lead">Pick an idea to see the evidence, where India stands today, and a step-by-step plan to bring it here.</p></div>
+    <div id="ideas-body" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ACT -->
+<section class="view" id="v-act" data-view="act" aria-labelledby="h-act" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-act">Add your name. Every signature is counted.</h1><p class="lead">Each petition has a specific ask, the evidence behind it, a plan, and the office we will deliver it to.</p></div>
+    <details class="law">
+      <summary>How do signatures become action under Indian law?</summary>
+      <p>No law in India sets a number of signatures that forces Parliament, a ministry or a court to act. Signatures show public support, and these are the routes that support can travel:</p>
+      <ul>
+        <li><strong>Parliament.</strong> Any citizen can petition the Lok Sabha or Rajya Sabha Committee on Petitions. An MP has to countersign it, and it can’t cover a matter already before a court.</li>
+        <li><strong>Disability Commissioners.</strong> Anyone can complain to the Chief Commissioner or a State Commissioner for Persons with Disabilities.</li>
+        <li><strong>Courts.</strong> Any public-spirited person can file a Public Interest Litigation in a High Court or the Supreme Court. Judges decide on law and evidence, not signature counts.</li>
+        <li><strong>Consultations.</strong> Anyone can comment on draft government rules before the deadline.</li>
+      </ul>
+      <p>When a petition reaches its milestone, we deliver it with the signer count and a state-wise breakdown to the office named on it, and post the response here.</p>
+    </details>
+    <p class="status" id="backend-note" role="status"></p>
+    <div class="side-main">
+      <ul class="pet-list" id="pet-list" aria-label="Petitions"></ul>
+      <div id="pet"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GIVE -->
+<section class="view" id="v-give" data-view="give" aria-labelledby="h-give" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-give">Give to the people doing the work</h1><p class="lead">These organisations support disabled people and their families every day. Your donation goes straight to them.</p></div>
+    <div class="give-intro">
+      <aside class="give-note">
+        <h2>Before you give</h2>
+        <ul>
+          <li>Ask for an 80G receipt to claim a tax deduction.</li>
+          <li>Give monthly if you can. Steady funding helps more than one large gift.</li>
+          <li>Can’t give money? Volunteer your time or skills. Most of these organisations need help with therapy support, teaching and outreach.</li>
+        </ul>
+      </aside>
+      <div class="causes" id="causes"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="view" id="v-about" data-view="about" aria-labelledby="h-about" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-about">Hi, I’m Aadya</h1></div>
+    <div class="main-side">
+      <div class="stack measure" style="font-size:1.06rem">
+        <p>When my younger brother Aadi was diagnosed with cerebral palsy, it was hard for my family to work out how to support him. There were hardly any complete resources written for Indian families, so we had to put the information together ourselves. It was slow and tiring.</p>
+        <p>I also heard a lot of uninformed comments when I was out in public with him. More than angry, they made me sad, because they came from a lack of awareness.</p>
+        <p>In 2021, when I was 17, I designed and coded the first version of this site from Mumbai. Aadi is still the reason I do this.</p>
+        <p>I want this to be the place a family can open on the day of a diagnosis, and the place where people across India can push, together, for the laws and services disabled people are owed.</p>
+        <p><strong>If you’re a parent, a disabled person, a teacher, a lawyer, a journalist or someone who wants to help, I’d love to hear from you.</strong></p>
+      </div>
+      <aside>
+        <ul class="facts">
+          <li><b>Founded</b>Disability Visibility India, October 2021, Mumbai</li>
+          <li><b>Find me</b><a href="http://www.aadyapawar.com/" target="_blank" rel="noopener">aadyapawar.com</a> · <a href="https://www.linkedin.com/company/disability-visibility" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://www.instagram.com/disabilityvisibilityindia/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><b>Watch</b><a href="https://www.youtube.com/watch?v=lUIDZgBA2Us" target="_blank" rel="noopener">Our 2021 introduction video</a></li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="collage" aria-label="Photos of Aadya and Aadi growing up" style="margin-top:2.5rem">
+      <img class="a" src="p7.jpg" alt="Aadya and Aadi laughing together on a sofa.">
+      <img class="b" src="p3.jpg" alt="Aadya hugging a young Aadi in a swimming pool.">
+      <img class="c" src="p1.jpg" alt="Aadya as a child holding baby Aadi next to a birthday cake.">
+      <img class="d" src="p4.jpg" alt="Aadi in his wheelchair at a party, holding popcorn, with Aadya beside him.">
+      <img class="e" src="p8.jpg" alt="Aadya in festive clothes sitting with Aadi at home.">
+      <img class="f" src="p6.jpg" alt="Aadya and Aadi smiling for a selfie.">
+    </div>
+
+    <div class="grid2" style="margin-top:3rem;align-items:start">
+      <div class="box">
+        <h2 id="contact">Get in touch</h2>
+        <p class="muted" style="margin:.4rem 0 1.1rem">Messages come straight to me. I read every one.</p>
+        <form id="contact-form" class="f" novalidate>
+          <div class="two">
+            <label for="ct-name">Your name<input id="ct-name" type="text" maxlength="80" autocomplete="name"></label>
+            <label for="ct-email">Email<input id="ct-email" type="email" maxlength="120" autocomplete="email"></label>
+          </div>
+          <label for="ct-why">I’m writing as<select id="ct-why"><option>A parent or family member</option><option>A disabled person</option><option>A teacher or therapist</option><option>A lawyer or researcher</option><option>A journalist</option><option>An organisation or company</option><option>Someone who wants to volunteer</option><option>Something else</option></select></label>
+          <label for="ct-msg">Message<textarea id="ct-msg" rows="6" maxlength="3000"></textarea></label>
+          <div class="hp" aria-hidden="true"><label for="ct-web">Leave this empty<input id="ct-web" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <div><button class="btn" type="submit">Send message</button></div>
+          <p class="status" id="ct-status" role="status"></p>
+        </form>
+      </div>
+      <div class="stack">
+        <h3>Ways to help</h3>
+        <ul>
+          <li>Translate a guide into your language</li>
+          <li>Share an organisation we should list</li>
+          <li>Tell us about a ruling or news story we missed</li>
+          <li>Help deliver a petition in your state</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="admin-slot"></div>
+</main>
+
+<div class="tactile guide" aria-hidden="true"></div>
+<footer class="foot">
+  <div class="wrap">
+    <span class="brand"><span class="mark" aria-hidden="true"></span><span>Disability Visibility India</span></span>
+    <div class="links">
+      <a href="https://www.instagram.com/disabilityvisibilityindia/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.linkedin.com/company/disability-visibility" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.facebook.com/DisabilityVisibilityIndia" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://twitter.com/visibilityIndia" target="_blank" rel="noopener">X (Twitter)</a>
+      <a href="#about">Contact me</a>
+    </div>
+    <p>This site is an information resource, not medical or legal advice. Please consult a doctor for health decisions and a lawyer for legal ones. Organisations listed are independent. News summaries are in our own words; follow the links for full reports. Content last reviewed October 2026.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ---------- SETTINGS for the copy on your own domain ---------- */
+const CONFIG = {
+  // Paste your Google Apps Script web-app URL here (see apps-script/Code.gs).
+  SHEETS_ENDPOINT: ""
+};
+/* ---------- CONTENT ---------- */
+const DIS21 = ["Blindness","Low vision","Leprosy cured persons","Hearing impairment (deaf and hard of hearing)","Locomotor disability","Dwarfism","Intellectual disability","Mental illness","Autism spectrum disorder","Cerebral palsy","Muscular dystrophy","Chronic neurological conditions","Specific learning disabilities","Multiple sclerosis","Speech and language disability","Thalassemia","Haemophilia","Sickle cell disease","Multiple disabilities, including deaf-blindness","Acid attack victims","Parkinson’s disease"];
+
+const CONDS = [
+ {n:"Autism",cat:"Autism spectrum disorder",k:"autism asd developmental communication sensory",
+  what:"Autism is a lifelong developmental difference in how a person communicates, processes the senses and relates to others. It is a spectrum: some autistic people need little support, others need support every day.",
+  signs:["Little eye contact, babbling or pointing in the first two years","Strong preference for routine, distress at change","Deep, focused interests","Being over- or under-sensitive to sound, light, touch or taste"],
+  india:"A recognised RPwD disability. Covered by the National Trust, including the Niramaya health insurance scheme.",
+  start:"Ask for a developmental assessment from a developmental paediatrician, or at your District Early Intervention Centre (DEIC).",
+  orgs:[["Action For Autism","http://www.autism-india.org/"],["India Autism Center","https://indiaautismcenter.org/"]]},
+ {n:"Blindness and low vision",cat:"Blindness · Low vision",k:"blind visual impairment sight eyes braille screen reader",
+  what:"The law recognises total blindness and low vision as two separate disabilities. Many causes, such as cataract and uncorrected refractive error, are preventable or treatable when caught early.",
+  signs:["Holding things very close, bumping into objects","Difficulty reading the board at school","Squinting or eye rubbing"],
+  india:"Free screen readers (NVDA on computers, TalkBack on Android), a white cane and braille or audio books open up school and work. The 2025 Supreme Court ruling in Amar Jain makes accessible digital services a fundamental right.",
+  start:"Get a full eye exam; ask the eye hospital about low-vision aids and orientation and mobility training.",
+  orgs:[["National Association for the Blind","https://www.nabindia.org/"],["Sightsavers India","https://www.sightsaversindia.in/"],["Mission for Vision","http://www.missionforvision.org.in/"]]},
+ {n:"Cerebral palsy",cat:"Cerebral palsy",k:"cp cerebral palsy movement spastic motor",
+  what:"Cerebral palsy (CP) is a group of conditions that affect movement and posture. It is caused by damage to the developing brain before, during or soon after birth. It does not get worse over time, but needs change as a child grows.",
+  signs:["Late sitting, crawling or walking","Stiff or floppy muscles; favouring one side","Difficulty with speech, chewing or swallowing","Sometimes seizures, vision or learning differences, though many people with CP have none of these"],
+  india:"Types include spastic (the most common), dyskinetic, ataxic and mixed. Covered by the National Trust and Niramaya.",
+  start:"Start physiotherapy, occupational therapy and speech therapy early. Ask about AAC (communication boards or apps) if speech is hard.",
+  orgs:[["Indian Academy of Cerebral Palsy","https://iacp.co.in/"],["Cerebral Palsy Association of India","http://cpai.org.in/"]]},
+ {n:"Down syndrome",cat:"Intellectual disability",k:"down syndrome trisomy chromosome intellectual",
+  what:"Down syndrome happens when a person has an extra copy of chromosome 21. It brings some degree of intellectual disability, which varies widely, and a higher chance of some health conditions.",
+  signs:["Usually identified at or before birth","Low muscle tone in infancy","Higher chance of heart, thyroid, hearing and vision issues that need regular checks"],
+  india:"Falls under intellectual disability in the RPwD Act. Inclusive schooling is a legal right under Section 16.",
+  start:"Begin early intervention therapy in the first months, and schedule a heart check and regular thyroid tests.",
+  orgs:[["Down Syndrome Federation of India","https://downsyndrome.in/"]]},
+ {n:"Dwarfism",cat:"Dwarfism",k:"dwarfism short stature achondroplasia little people",
+  what:"The RPwD Act defines dwarfism as an adult height of 4 feet 10 inches (147 cm) or less due to a medical or genetic condition. Achondroplasia is the most common cause.",
+  signs:["Short limbs relative to the body (in achondroplasia)","Possible spine, joint or breathing issues that need monitoring"],
+  india:"Counts as a locomotor disability and is covered by the 4% reservation in government jobs. Accessible counters, step stools and lower switches remove most everyday barriers.",
+  start:"See an orthopaedic or genetics specialist for regular monitoring, especially of the spine.",
+  orgs:[["The Little People of India","https://www.facebook.com/littlepeopleindia/"]]},
+ {n:"Epilepsy",cat:"Chronic neurological condition",k:"epilepsy seizures fits neurological",
+  what:"Epilepsy is a tendency to have repeated seizures. It is not contagious and not caused by spirits or bad deeds. Most people with epilepsy can become seizure-free with the right medicine.",
+  signs:["Staring spells, jerking, or sudden falls","Confusion or tiredness after an episode"],
+  india:"Seizure first aid: stay calm, time it, turn the person on their side, put something soft under the head. Never put anything in their mouth and don’t hold them down. Call 112 if it lasts more than 5 minutes.",
+  start:"See a neurologist; keep a seizure diary and take medicine regularly.",
+  orgs:[["Epilepsy Foundation India","https://epilepsyfoundationindia.com/"],["Samman Association","https://epilepsymumbai.org/"]]},
+ {n:"Leprosy",cat:"Leprosy cured persons",k:"leprosy hansen infection curable",
+  what:"Leprosy is a bacterial infection that is fully curable with multidrug therapy, given free at government health centres. Early treatment prevents disability, and a person on treatment does not spread it.",
+  signs:["Pale or reddish skin patches with reduced feeling","Numbness or weakness in hands or feet"],
+  india:"In 2019 Parliament removed leprosy as a ground for divorce from personal laws. Stigma, not the illness, is now the main barrier.",
+  start:"Visit your nearest government health centre for free diagnosis and treatment.",
+  orgs:[["Sasakawa-India Leprosy Foundation","https://silf.in/"],["Bombay Leprosy Project","https://www.bombayleprosy.org/"],["The Leprosy Mission Trust India","https://www.leprosymission.in/"]]},
+ {n:"Muscular dystrophy",cat:"Muscular dystrophy",k:"muscular dystrophy duchenne dmd muscle weakness",
+  what:"Muscular dystrophies are genetic conditions that cause muscle weakness that increases over time. Duchenne muscular dystrophy, which mostly affects boys, is the most common form in children.",
+  signs:["Frequent falls; difficulty climbing stairs or getting up from the floor","Enlarged calf muscles","Later, breathing and heart effects that need monitoring"],
+  india:"Some rare-disease treatments may be supported under the National Policy for Rare Diseases at designated Centres of Excellence.",
+  start:"Ask a neurologist about genetic testing; begin physiotherapy and regular heart and lung checks.",
+  orgs:[["Indian Association of Muscular Dystrophy","https://www.iamd.in/"],["Muscular Dystrophy Association India","http://mdindia.net/"]]},
+ {n:"Multiple sclerosis",cat:"Multiple sclerosis",k:"multiple sclerosis ms fatigue invisible hidden",
+  what:"In multiple sclerosis (MS), the immune system damages the protective coating of nerves in the brain and spinal cord. Symptoms come and go or build slowly, and are often invisible to others.",
+  signs:["Extreme tiredness","Blurred or double vision","Numbness, tingling, or problems with balance and walking"],
+  india:"A hidden disability: the Sunflower lanyard (see Innovations) helps at Delhi and Hyderabad airports.",
+  start:"See a neurologist; an MRI and early disease-modifying treatment can slow it down.",
+  orgs:[["Multiple Sclerosis Society of India","https://www.mssocietyindia.org/"]]},
+ {n:"Specific learning disabilities",cat:"Specific learning disabilities",k:"dyslexia dysgraphia dyscalculia learning reading writing maths",
+  what:"Dyslexia (reading), dysgraphia (writing) and dyscalculia (maths) are differences in how the brain processes language and numbers. They have nothing to do with intelligence or effort.",
+  signs:["Reading far below grade level despite teaching","Mixing up letters long after classmates","Very messy writing or great difficulty with numbers"],
+  india:"Students can get extra time, a scribe and other exam accommodations. In 2025 the Supreme Court said scribes can’t be limited only to candidates with benchmark disability.",
+  start:"Ask for a psycho-educational assessment by a clinical psychologist; share the report with the school.",
+  orgs:[["Dyslexia Association of India","https://www.dyslexiaindia.org.in/"],["Mimaansa","http://mimaansa.org/"]]},
+ {n:"Spina bifida",cat:"Locomotor disability",k:"spina bifida neural tube spine folic acid",
+  what:"Spina bifida happens when the spine and spinal cord don’t form fully during early pregnancy. It can affect walking, bladder and bowel control, and sometimes causes fluid build-up in the brain (hydrocephalus).",
+  signs:["Visible at birth in most cases","Weakness or loss of feeling in the legs"],
+  india:"Taking folic acid before and in early pregnancy greatly lowers the risk. Ask your doctor.",
+  start:"Care usually involves a neurosurgeon, urologist and physiotherapist working together.",
+  orgs:[["Spina Bifida Foundation","https://www.spinabifidafoundation.org/"],["Indian Spina Bifida Association","http://indiaspinabifidaassociation.org/"]]},
+ {n:"Thalassemia",cat:"Thalassemia",k:"thalassemia blood disorder transfusion carrier",
+  what:"Thalassemia is an inherited blood disorder in which the body makes too little healthy haemoglobin. People with thalassemia major need regular blood transfusions and medicine to remove extra iron.",
+  signs:["Paleness, tiredness and slow growth in early childhood"],
+  india:"A simple blood test (HbA2) shows if you are a carrier. Testing before marriage or pregnancy prevents thalassemia major in children.",
+  start:"Register with a thalassemia day-care centre at a government or trust hospital for regular transfusions.",
+  orgs:[["Think Foundation","https://www.thinkfoundation.org/"],["National Thalassemia Welfare Society","http://www.thalassemiaindia.org/"],["Thalassemia and Sickle Cell Society","https://www.tscsindia.org/"]]}
+];
+
+const MYTHS = [
+ ["Disability is punishment for bad karma in a past life.","Disability comes from genetics, illness, injury, birth complications and ageing. It can happen to anyone, in any family. Blame hurts families and stops them from seeking help."],
+ ["God gives disabled people a special power to make up for it.","Disabled people who succeed do so through talent and hard work, often against barriers. Calling it a divine gift erases that effort."],
+ ["Helping a disabled person earns you blessings.","Help because it is the decent thing to do, and only if the person wants it. Disabled people are not a route to someone else’s good karma."],
+ ["Accessibility only matters to disabled people.","Ramps, lifts and clear signs help elderly people, parents with prams, pregnant women, injured people and travellers with luggage. Anyone can become disabled at any time."],
+ ["Disabled people always need help.","Most disabled people do things independently, in their own way. Ask first. If they say no, respect it. Grabbing someone on crutches can knock them off balance."],
+ ["People with mental illness are violent.","People with mental illness are far more likely to be victims of violence than to cause it. Many people around you live with mental illness and you would never know."],
+ ["Making a workplace accessible is too expensive.","Most adjustments, like flexible hours, screen-reader software or a ramp, cost little. The Supreme Court has called reasonable accommodation a fundamental right."],
+ ["Disabled people are inspirational just for living their lives.","Living with a disability means adapting, not being brave. Praise people for what they achieve, not for existing."],
+ ["All deaf people can lip-read.","Lip-reading is unreliable even for skilled users; much of speech can’t be seen on the lips. Many deaf Indians use Indian Sign Language."],
+ ["Leprosy spreads by touch and can’t be cured.","Leprosy is curable with free medicine. People on treatment don’t spread it, and it doesn’t spread through casual touch."],
+ ["Disabled children belong in special schools only.","Section 16 of the RPwD Act requires schools to admit disabled children without discrimination and support them in regular classrooms."]
+];
+
+const WORDS = [
+ ["Handicapped, cripple, apahij","Disabled person / person with a disability","Use what the person prefers. Many activists prefer “disabled person” as an identity."],
+ ["Deaf and dumb, goonga-behra","Deaf, hard of hearing","Deaf people communicate; many through Indian Sign Language."],
+ ["Mentally retarded, pagal","Person with an intellectual disability / mental illness","These words are slurs. Name the condition only if it is relevant."],
+ ["Suffering from, victim of","Has, lives with","Most people don’t see their disability as suffering."],
+ ["Wheelchair-bound, confined to a wheelchair","Wheelchair user","A wheelchair gives freedom; it doesn’t confine anyone."],
+ ["Normal people","Non-disabled people","“Normal” implies disabled people are abnormal."],
+ ["Divyang, differently abled, special","Disabled, or the person’s own word","Divyang is the government’s term. Many disability rights groups have criticised it as a euphemism. Follow the person’s preference."]
+];
+
+const STEPS = [
+ ["Get assessed and certified","A disability certificate from a government medical authority is the key to most rights and schemes. Apply once, online, and you also get a UDID card that works across India.",["Apply at swavlambancard.gov.in; you’ll be called for assessment at a designated hospital","Benchmark disability means 40% or more","Track your application on the portal; you can complain to the State Commissioner if it’s delayed"]],
+ ["Start early intervention","For young children, the first years matter most. Therapy started early changes outcomes.",["District Early Intervention Centres (DEICs) under the Rashtriya Bal Swasthya Karyakram offer screening and therapy","Ask about physiotherapy, occupational therapy, speech therapy and special education","Keep every report in one folder; you will need them again"]],
+ ["Claim money and health support","Several central and state schemes help with costs. States add their own amounts on top of central ones.",["Disability pension (IGNDPS): ₹300 a month from the Centre for people with severe disability in BPL families, plus state top-ups","Niramaya health insurance via the National Trust for autism, cerebral palsy, intellectual and multiple disabilities","ADIP scheme for assistive devices; scholarships at scholarships.gov.in; tax deductions under Sections 80U and 80DD"]],
+ ["Use education rights","The law protects a child’s place in school and in exams.",["Free education up to age 18 for children with benchmark disabilities (Section 31)","Regular schools must admit and support disabled children (Section 16)","At least 5% of seats in government higher-education institutions are reserved (Section 32); ask for scribes and extra time in exams"]],
+ ["Know work rights","Disabled people have the right to equal opportunity and reasonable accommodation at work.",["At least 4% of government posts are reserved for people with benchmark disabilities (Section 34)","Government employers can’t discriminate (Section 20); private employers must publish an equal-opportunity policy (Section 21)","Enable India runs free career counselling and job placement"]],
+ ["Plan for the long term","Parents of adults with intellectual disability, autism, CP or multiple disabilities often worry about who will care for their child later.",["The National Trust’s Local Level Committee in your district can appoint a legal guardian","Look into a will and a trust for your child’s future care","Connect with parent support groups; you are not alone"]],
+ ["Complain when rights are denied","You don’t need a lawyer to start.",["File with the Chief Commissioner for Persons with Disabilities (ccpd.nic.in) or your State Commissioner","Publicly insulting or humiliating a disabled person is an offence under Section 92","For urgent or large-scale issues, disability rights lawyers can file a writ petition in the High Court"]]
+];
+
+const DIR = [
+ ["The National Trust","https://www.thenationaltrust.gov.in/","Autism, CP, ID, multiple","Government","National"],
+ ["Swavlamban Card (UDID)","https://www.swavlambancard.gov.in/","All disabilities","Government","National"],
+ ["Department of Empowerment of Persons with Disabilities","https://depwd.gov.in/","All disabilities","Government","National"],
+ ["Chief Commissioner for Persons with Disabilities","https://ccpd.nic.in/","Complaints, all disabilities","Government","National"],
+ ["NIEPMD","https://www.niepmd.tn.nic.in/","Multiple disabilities","Government","Chennai"],
+ ["NIEPID","https://niepid.nic.in/","Intellectual disability","Government","Secunderabad"],
+ ["Rehabilitation Council of India","http://www.rehabcouncil.nic.in/","Professionals and training","Government","National"],
+ ["Enable India","http://www.enableindia.org/","Jobs and skills, all disabilities","NGO","Bengaluru, online"],
+ ["Amrit Foundation of India","https://amritfoundationofindia.in/","Autism, CP, Down syndrome, ID","NGO","New Delhi"],
+ ["Udaan","https://udaan.org/","Therapy and rehabilitation","NGO","New Delhi"],
+ ["Save the Children India","https://www.savethechildrenindia.org/","Hearing, early intervention","NGO","Mumbai"],
+ ["Action For Autism","http://www.autism-india.org/","Autism","NGO","New Delhi"],
+ ["India Autism Center","https://indiaautismcenter.org/","Autism","NGO","Kolkata"],
+ ["National Association for the Blind","https://www.nabindia.org/","Blindness and low vision","NGO","Mumbai and branches"],
+ ["Mission for Vision","http://www.missionforvision.org.in/","Blindness and low vision","NGO","Mumbai, Chennai, Kolkata"],
+ ["Sightsavers India","https://www.sightsaversindia.in/","Blindness and low vision","NGO","National"],
+ ["Spina Bifida Foundation","https://www.spinabifidafoundation.org/","Spina bifida","NGO","Mumbai"],
+ ["Indian Spina Bifida Association","http://indiaspinabifidaassociation.org/","Spina bifida","NGO","Jaipur"],
+ ["Indian Association of Muscular Dystrophy","https://www.iamd.in/","Muscular dystrophy","NGO","Solan, HP"],
+ ["Muscular Dystrophy Association India","http://mdindia.net/","Muscular dystrophy","NGO","National"],
+ ["Indian Academy of Cerebral Palsy","https://iacp.co.in/","Cerebral palsy","Professional body","Noida"],
+ ["Cerebral Palsy Association of India","http://cpai.org.in/","Cerebral palsy","NGO","Mumbai"],
+ ["Down Syndrome Federation of India","https://downsyndrome.in/","Down syndrome","NGO","National"],
+ ["Epilepsy Foundation India","https://epilepsyfoundationindia.com/","Epilepsy","NGO","Mumbai"],
+ ["Samman Association","https://epilepsymumbai.org/","Epilepsy","NGO","Mumbai"],
+ ["Think Foundation","https://www.thinkfoundation.org/","Thalassemia","NGO","Mumbai"],
+ ["National Thalassemia Welfare Society","http://www.thalassemiaindia.org/","Thalassemia","NGO","New Delhi"],
+ ["Thalassemia and Sickle Cell Society","https://www.tscsindia.org/","Thalassemia, sickle cell","NGO","Hyderabad"],
+ ["Sasakawa-India Leprosy Foundation","https://silf.in/","Leprosy","NGO","New Delhi"],
+ ["Bombay Leprosy Project","https://www.bombayleprosy.org/","Leprosy","NGO","Mumbai"],
+ ["The Leprosy Mission Trust India","https://www.leprosymission.in/","Leprosy","NGO","National"],
+ ["Multiple Sclerosis Society of India","https://www.mssocietyindia.org/","Multiple sclerosis","NGO","National"],
+ ["Dyslexia Association of India","https://www.dyslexiaindia.org.in/","Learning disabilities","NGO","National"],
+ ["Mimaansa","http://mimaansa.org/","Learning disabilities","NGO","New Delhi"]
+];
+
+const NEWS = [
+ {d:"2026-09-25",t:"ruling",h:"Delhi High Court: a neurological condition can’t disqualify someone who can do the job",s:"In Manish Kumar v. Railway Board, the court held that a candidate whose neurological condition causes locomotor disability can’t be rejected if he meets the job’s functional requirements.",w:"Recruiters must judge what a person can actually do, not the label on their certificate.",src:"Disability Rights Through Courts",u:"https://www.disabilityrightsindia.com/2026/09/manish-kumar-railway-board-locomotor-disability-neurological-condition.html"},
+ {d:"2026-09",t:"policy",h:"Census population count starts 1 December in UP, Punjab, Goa and Uttarakhand",s:"The four poll-bound states move first, from 1 December 2026 to 4 January 2027, with self-enumeration from 16 November. The rest of India is counted in February 2027.",w:"The disability questions come in this phase. This is the window to make sure every disabled person is counted.",src:"Swarajya",u:"https://swarajyamag.com/states/census-2027-population-enumeration-in-up-punjab-goa-and-uttarakhand-to-begin-from-1-december"},
+ {d:"2026-08-12",t:"data",h:"10 lakh UDID applications unaccounted for, MP asks government",s:"A government reply in the Rajya Sabha showed 1.15 crore applications since 2021, 87.6 lakh cards issued, 8.2 lakh rejected and 9.6 lakh pending, leaving about 10 lakh unexplained. Waits run to hundreds of days in some places.",w:"Without a UDID card, people can’t easily reach schemes they are entitled to.",src:"Salar News (Rajya Sabha reply)",u:"https://salarnews.in/national-news/details/50100"},
+ {d:"2026-07-29",t:"ruling",h:"Supreme Court gives Centre and 10 states four weeks to appoint disability commissioners",s:"In Rajive Raturi v. Union of India, the Court ordered independent State Commissioners in Delhi, Haryana, Rajasthan, Tamil Nadu and six others, a full-time Chief Commissioner, and final accessibility rules within six months.",w:"Commissioners hear disability complaints. Vacant posts mean complaints go nowhere. Next hearing: 20 January 2027.",src:"LiveLaw",u:"https://www.livelaw.in/top-stories/supreme-court-directs-appointment-disability-commissioners-rpwd-act-543521"},
+ {d:"2026-07-20",t:"policy",h:"Draft rules would make apps, websites and devices meet Indian accessibility standards",s:"Draft amendment rules published on 20 July 2026 would require covered ICT products to conform to IS 17802 and publish an Accessibility Conformance Report, with one to two years to comply.",w:"If finalised with real enforcement, this could make banking, government and shopping apps usable with a screen reader.",src:"IndiaLaw LLP",u:"https://www.indialaw.in/blog/regulatory/rpwd-amendment-rules-2026/"},
+ {d:"2026-05-22",t:"data",h:"Pension study: ₹300 a month disability pension unchanged since 2012",s:"A study commissioned by the Ministry of Rural Development surveyed 6,000 beneficiaries and found most spend their pension on food and treatment. It recommends an inflation-linked national floor pension.",w:"₹300 has lost much of its value since 2012. This is the evidence behind our pension petition.",src:"Down To Earth",u:"https://www.downtoearth.org.in/governance/poor-elderly-widows-and-disabled-people-spend-much-of-their-pension-on-food-and-treatment-study-finds"},
+ {d:"2026-03-17",t:"policy",h:"Census 2027 will count all 21 disabilities, minister says",s:"Minister of State Ramdas Athawale said Census 2027 will recognise all 21 RPwD categories through trained enumerators. Census 2011 asked about only eight.",w:"Better data means better-targeted schemes. The promise still has to be delivered in the field.",src:"All India Radio News",u:"https://www.newsonair.gov.in/mos-sje-ramdas-athawale-census-2027-to-recognise-all-21-disability-categories-with-enhanced-data"},
+ {d:"2026-02-20",t:"news",h:"Two years after the landmark accessibility ruling, compliance gaps remain",s:"At a compliance hearing, petitioners pointed to weak enforcement, one ministry carrying the whole load, and unclear rules for sectors like websites. The Court gave the Centre four more months.",w:"A strong judgment is only as good as its enforcement.",src:"ThePrint",u:"https://theprint.in/judiciary/has-landmark-sc-order-on-accessibility-for-disabled-translated-on-ground-compliance-hearing-bares-gaps/2859044/"},
+ {d:"2026-01-13",t:"ruling",h:"Supreme Court: reasonable accommodation is a fundamental right",s:"In Sujata Bora v. Coal India, a visually impaired woman declared “unfit” after a 2019 recruitment was ordered appointed to a newly created post with suitable accommodations.",w:"Employers can’t hide behind technicalities like an expired selection panel.",src:"Disability Rights Through Courts",u:"https://www.disabilityrightsindia.com/2026/01/substantive-equality-over.html"},
+ {d:"2025-11-27",t:"ruling",h:"Supreme Court orders comedians who mocked disabled people to host fundraisers",s:"In a case brought by Cure SMA Foundation, the bench led by Chief Justice Surya Kant directed Samay Raina and four others to host at least two programmes a month featuring disabled people and raising funds, calling it a social, not penal, burden.",w:"Mockery of disability now carries public consequences.",src:"Deccan Herald",u:"https://www.deccanherald.com/india/supreme-court-directs-samay-raina-other-comedians-to-host-persons-with-disabilities-3812227"},
+ {d:"2025-05-06",t:"ruling",h:"Kabir Paharia: benchmark disability alone can’t bar an MBBS seat",s:"The Supreme Court ordered the National Medical Commission to revise its guidelines to use functional assessment and assistive technology instead of blanket exclusions.",w:"Disabled students can now challenge rejections from medical colleges based only on percentage of disability.",src:"LiveLaw 2025 round-up",u:"https://www.livelaw.in/amp/top-stories/supreme-court-2025-round-up-for-disability-rights-516800"},
+ {d:"2025-04-30",t:"ruling",h:"Digital access is part of the right to life, Supreme Court rules",s:"In Amar Jain v. Union of India, the Court issued 20 directions to make e-KYC accessible to blind people and acid attack survivors, including alternatives to the “blink” liveness test.",w:"Banks, telecoms and government services must design for disabled users.",src:"Disability Rights Through Courts",u:"https://www.disabilityrightsindia.com/2025/05/supreme-court-issues-directions-to-make.html"},
+ {d:"2025-03",t:"ruling",h:"Blind candidates can’t be barred from becoming judges",s:"The Supreme Court struck down a Madhya Pradesh rule that kept visually impaired candidates out of judicial service, calling it unconstitutional discrimination.",w:"Opens a profession that was closed to blind Indians in several states.",src:"LiveLaw 2025 round-up",u:"https://www.livelaw.in/amp/top-stories/supreme-court-2025-round-up-for-disability-rights-516800"}
+];
+
+const CASES = [
+ {id:"tactile",title:"Tactile paving that actually leads somewhere",origin:"Japan · first laid in Okayama, 1967",
+  what:"Seiichi Miyake invented raised “tenji blocks” in 1965: bars that guide and dots that warn. Japan National Railways adopted them, and Japan standardised them nationally in 2001.",
+  facts:["Invented 1965","National standard 2001","Now used worldwide"],
+  india:"India’s accessibility guidelines already call for tactile paving, and you’ll see yellow tiles at many metro stations. On ordinary footpaths they are often broken, blocked by poles or end abruptly, which can be more dangerous than none.",
+  adapt:["Lay continuous routes: bus stop to station entrance to ticket counter, not isolated patches","Have blind and low-vision residents audit routes before the contractor is paid","Add maintenance to municipal contracts, with photos geotagged on a public map","Map existing paving in OpenStreetMap so navigation apps can use it"],
+  who:"Municipal corporations, metro rail corporations, Smart City SPVs",
+  src:[["Wikipedia: Tactile paving","https://en.wikipedia.org/wiki/Tactile_paving"],["Deccan Herald: Bengaluru footpaths","https://www.deccanherald.com/amp/story/india%2Fkarnataka%2Fbengaluru%2Fbengaluru-news-broken-slabs-blocked-paths-why-bengaluru-remains-a-nightmare-city-for-pedestrians-3866035"],["OpenStreetMap tactile_paving tag","https://wiki.openstreetmap.org/wiki/Proposed_features/Tactile_paving"]]},
+ {id:"atw",title:"A public fund for workplace adjustments",origin:"United Kingdom · Access to Work",
+  what:"Access to Work pays for equipment, software, sign language interpreters, support workers and taxi fares when public transport isn’t accessible, so the cost doesn’t fall on the employer or employee.",
+  facts:["74,200 people funded in 2024–25","£321 million spent","Up to £69,260 per person a year"],
+  india:"The RPwD Act requires reasonable accommodation, but small private employers often say they can’t afford it, and no central fund pays for workplace aids. The UK scheme has a warning too: by November 2025 decisions took 109 days on average.",
+  adapt:["Pilot an “Inclusion at Work” grant through the ADIP assistive-devices scheme, paying for workplace aids and interpreters","Start with interpreters and screen-reader software, which are cheap and high-impact","Set a 30-day decision deadline in the scheme rules from day one","Partner with Enable India for job-coach support"],
+  who:"Department of Empowerment of Persons with Disabilities, Ministry of Labour",
+  src:[["GOV.UK: Access to Work","https://www.gov.uk/access-to-work"],["National Audit Office report, Feb 2026","https://www.nao.org.uk/wp-content/uploads/2026/02/the-access-to-work-scheme-summary.pdf"]]},
+ {id:"sunflower",title:"The Sunflower lanyard for hidden disabilities",origin:"United Kingdom · Gatwick Airport, 2016",
+  what:"A green lanyard with sunflowers lets people with non-visible disabilities, like autism, MS, epilepsy or chronic pain, quietly signal that they may need more time or help. Staff are trained to recognise it.",
+  facts:["3 million+ lanyards worldwide","Brazil made it a national symbol by law in 2023"],
+  india:"Delhi and Hyderabad airports already run the scheme. Railways, metros, hospitals, banks and exam centres, where people with hidden disabilities face the most stress, don’t yet.",
+  adapt:["Extend it to Indian Railways and metro systems, starting with the busiest stations","Hand out lanyards free at UDID camps and District Disability Rehabilitation Centres","Train exam-centre staff for board and entrance exams","Use it alongside, never instead of, legal accommodations"],
+  who:"Ministry of Railways, metro corporations, exam bodies",
+  src:[["Wikipedia: Hidden Disabilities Sunflower","https://en.wikipedia.org/wiki/Hidden_Disabilities_Sunflower"],["Delhi Airport programme","https://dial2020r2.newdelhiairport.in/airport-guides/hidden-disabilities-sunflower"],["Hyderabad Airport programme","https://www.hyderabad.aero/hidden-disabilities-sunflower.aspx"]]},
+ {id:"bme",title:"Volunteers who lend their eyes by video call",origin:"Denmark · Be My Eyes, 2015",
+  what:"A blind or low-vision person opens the app and is connected by video to a sighted volunteer who reads a label, checks a colour or finds a dropped item. An AI describer now handles many requests instantly.",
+  facts:["1 million users","10 million volunteers","180+ languages, 150+ countries (Mar 2026)"],
+  india:"India has one of the world’s largest populations of blind and low-vision people, and many speak languages with few volunteers online. Help is fastest when volunteers share the caller’s language and time zone.",
+  adapt:["Run volunteer drives through NSS units and college clubs, asking students to sign up in their home language","Ask companies to count volunteer hours toward CSR employee engagement","Teach the app at blind schools and NAB centres alongside screen-reader training"],
+  who:"Colleges, NGOs, corporate CSR teams",
+  src:[["Be My Eyes milestone announcement, Mar 2026","https://www.bemyeyes.com/news/be-my-eyes-reaches-1-million-blind-and-low-vision-users-and-10-million-volunteers/"]]},
+ {id:"signai",title:"Sign language on station and train screens",origin:"United Kingdom · Northern Rail and Signapse, 2024",
+  what:"Northern trialled train screens that show British Sign Language announcements, built by stitching together clips recorded by real Deaf signers, on routes out of Leeds.",
+  facts:["Trial began Feb 2024","Leeds–York and Leeds–Manchester routes"],
+  india:"Indian Railways and metros announce delays and platform changes by voice, which deaf passengers miss. India has an official Indian Sign Language dictionary from ISLRTC to build on.",
+  adapt:["Start with fixed phrases: station names, platform changes, delays, emergencies","Record clips with Deaf ISL signers and have the Deaf community review every phrase","Show them on existing passenger information screens","Keep human interpreters for anything complex; this complements them"],
+  who:"Ministry of Railways, ISLRTC, metro corporations",
+  src:[["Northern Rail press release","https://media.northernrailway.co.uk/news/northern-using-ai-to-trial-british-sign-language-announcements-on-trains"]]},
+ {id:"taxi",title:"Taxis every wheelchair user can hail",origin:"United Kingdom · London, since 1989",
+  what:"Since February 1989, every newly licensed London black cab has had to carry a passenger in a wheelchair, with a built-in ramp and enough headroom. Over time the whole fleet became accessible.",
+  facts:["Rule since 1989","Applies to every new licence"],
+  india:"Wheelchair users in Indian cities have very few taxi or ride-hailing options and often must transfer out of their chair. The Motor Vehicle Aggregator Guidelines, 2020, already let states set licence conditions for app-based fleets.",
+  adapt:["States attach a minimum share of wheelchair-accessible vehicles to new aggregator licences","Phase it in over five years so fleets replace vehicles naturally","Fund ramp-equipped e-rickshaws for the last mile","Show accessible vehicles as a filter in ride apps"],
+  who:"State transport departments, ride-hailing companies",
+  src:[["Wikipedia: Conditions of Fitness","https://en.wikipedia.org/wiki/Conditions_of_Fitness"]]}
+];
+
+const PETS = [
+ {id:"census",goal:5000,tag:"Data",title:"Count every disabled person in Census 2027",
+  ask:"We ask the Registrar General and Census Commissioner of India and the Ministry of Social Justice to make sure Census 2027 counts all 21 disabilities accurately, and publishes the results quickly.",
+  why:["Census 2011 counted 2.68 crore disabled people. Researchers estimate there are about 1.8 crore deaf and hard-of-hearing people alone, against roughly 50 lakh counted.","The government said in March 2026 that all 21 categories will be included. Counting starts 1 December 2026 in four states and February 2027 everywhere else."],
+  plan:["Use internationally tested functional questions (the UN Washington Group short set) alongside the 21 categories, so people who don’t know their diagnosis are still counted","Train every enumerator to ask the disability questions respectfully, with a short video in regional languages","Make the self-enumeration portal work with screen readers, and offer ISL video help","Publish district-level disability tables within 12 months of the count"],
+  route:"Office of the Registrar General and Census Commissioner, Ministry of Social Justice and Empowerment, and the Chief Commissioner for Persons with Disabilities",
+  deadline:"Deliver before self-enumeration opens on 16 November 2026"},
+ {id:"access",goal:10000,tag:"Accessibility",title:"Make accessibility enforceable, not optional",
+  ask:"We ask the Department of Empowerment of Persons with Disabilities to finalise the accessibility rules for buildings, transport, ICT and assistive technology with clear deadlines, penalties and public reporting.",
+  why:["In November 2024 the Supreme Court ruled in Rajive Raturi that minimum accessibility standards must be mandatory.","In February 2026 petitioners told the Court enforcement was still weak. In July 2026 the Court gave the government six months to finish the rules."],
+  plan:["Every ministry, not only one department, must report its own compliance each year","Publish a public, searchable accessibility audit of government buildings and websites","Set penalties for new buildings and apps that fail the standards","Require disabled people to be part of every audit team","Fill all vacant Disability Commissioner posts with independent, full-time appointees"],
+  route:"Department of Empowerment of Persons with Disabilities (in its public consultation) and the Chief Commissioner for Persons with Disabilities. This matter is before the Supreme Court, so it can’t go to Parliament’s Committee on Petitions.",
+  deadline:"Before the rules are finalised; next court hearing 20 January 2027"},
+ {id:"pension",goal:10000,tag:"Social security",title:"Raise the ₹300 disability pension",
+  ask:"We ask the Ministry of Rural Development to raise the central disability pension under IGNDPS and link it to inflation.",
+  why:["The Centre pays ₹300 a month to people with severe disabilities in BPL families. That amount hasn’t changed since 2012.","A study commissioned by the ministry itself, reported in May 2026, recommends an inflation-linked national floor pension."],
+  plan:["Raise the central share in the next Union Budget","Index it to inflation and review it every year","Review the BPL and severity cut-offs so more disabled people qualify","Pay through direct benefit transfer with a grievance helpline, since the study found some beneficiaries paid bribes"],
+  route:"Ministry of Rural Development, and the Lok Sabha and Rajya Sabha Committees on Petitions through an MP who agrees to countersign",
+  deadline:"Before Union Budget 2027–28"},
+ {id:"isl",goal:5000,tag:"Language",title:"Indian Sign Language in every public office and classroom",
+  ask:"We ask the Ministries of Education and Social Justice to provide Indian Sign Language interpreters in courts, hospitals, police stations and government offices, and to teach ISL in schools.",
+  why:["India has an estimated 1.8 crore deaf and hard-of-hearing people but only 387 schools for deaf students.","Researchers link the high dropout rate of deaf children to schools that don’t teach in sign language."],
+  plan:["Create a national ISL interpreter cadre with fixed pay, trained through ISLRTC","Guarantee an interpreter in every district hospital, police station and court on request","Offer ISL as a language subject in schools and train teachers of deaf students in ISL","Work with MPs toward constitutional recognition of ISL in the long term"],
+  route:"Ministry of Education, Ministry of Social Justice and Empowerment and ISLRTC; and MPs willing to raise it in Parliament",
+  deadline:"Rolling; first delivery at 5,000 signatures"}
+];
+
+const CAUSES = [
+ ["Enable India","Jobs, skills and placement for disabled people","Bengaluru","http://www.enableindia.org/"],
+ ["Action For Autism","Autism support, schooling and parent training","New Delhi","http://www.autism-india.org/"],
+ ["National Association for the Blind","Education and rehabilitation for blind people","Mumbai","https://www.nabindia.org/"],
+ ["Sightsavers India","Eye health and inclusion","National","https://www.sightsaversindia.in/"],
+ ["Spina Bifida Foundation","Treatment support for children with spina bifida","Mumbai","https://www.spinabifidafoundation.org/"],
+ ["Indian Association of Muscular Dystrophy","Care and rehabilitation centre","Solan, HP","https://www.iamd.in/"],
+ ["Think Foundation","Thalassemia care and prevention","Mumbai","https://www.thinkfoundation.org/"],
+ ["Bombay Leprosy Project","Leprosy treatment and rehabilitation","Mumbai","https://www.bombayleprosy.org/"]
+];
+
+const STATES = ["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Outside India"];
+
+/* ---------- helpers ---------- */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtINR = n => "₹" + Math.round(n||0).toLocaleString("en-IN");
+const fmtN = n => (n||0).toLocaleString("en-IN");
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtDate(d){ const p = String(d).split("-"); if(p.length===1) return p[0]; const m = MONTHS[+p[1]-1]||""; return p.length===2 ? `${m} ${p[0]}` : `${+p[2]} ${m} ${p[0]}`; }
+function store(k, v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v);}catch(e){ return null; } }
+function shortName(full){ const parts = String(full).trim().split(/\s+/).filter(Boolean); if(!parts.length) return ""; return parts[0].slice(0,24) + (parts.length>1 ? " " + parts[parts.length-1][0].toUpperCase() + "." : ""); }
+function setStatus(el, msg, kind){ el.textContent = msg; el.className = "status" + (kind ? " " + kind : ""); }
+const validEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+const KIND = {ruling:"Court ruling",policy:"Policy",data:"Data",news:"Report"};
+
+/* ---------- text size ---------- */
+(function(){
+  const sizes = [15,17,19,21,23]; let i = sizes.indexOf(+store("dvi-size")); if(i<0) i = 1;
+  const apply = () => { document.documentElement.style.setProperty("--base", sizes[i] + "px"); store("dvi-size", String(sizes[i])); $("#ts-down").disabled = i===0; $("#ts-up").disabled = i===sizes.length-1; };
+  $("#ts-down").addEventListener("click", () => { if(i>0){i--;apply();} });
+  $("#ts-up").addEventListener("click", () => { if(i<sizes.length-1){i++;apply();} });
+  apply();
+})();
+
+/* ---------- tabs ---------- */
+const VIEWS = ["home","learn","toolkit","news","ideas","act","give","about","admin"];
+function route(first){
+  let v = (location.hash || "#home").slice(1);
+  if(v === "contact"){ v = "about"; }
+  if(!VIEWS.includes(v) || (v==="admin" && !S.owner)) v = "home";
+  document.querySelectorAll(".view").forEach(sec => { sec.hidden = sec.dataset.view !== v; });
+  document.querySelectorAll(".tabs a").forEach(a => { if(a.getAttribute("href") === "#"+v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  document.title = v==="home" ? "Disability Visibility India" : `${$("#v-"+v+" h1").textContent} · Disability Visibility India`;
+  if(!first){
+    window.scrollTo(0,0);
+    if(location.hash === "#contact"){ const c = $("#contact"); c.setAttribute("tabindex","-1"); c.scrollIntoView(); c.focus({preventScroll:true}); }
+    else { const h = $("#v-"+v+" h1"); h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }
+  }
+}
+window.addEventListener("hashchange", () => route(false));
+
+/* ---------- learn ---------- */
+$("#list21").innerHTML = DIS21.map(d => `<li>${esc(d)}</li>`).join("");
+function renderConds(q=""){
+  const ql = q.trim().toLowerCase();
+  const list = CONDS.filter(c => !ql || (c.n+" "+c.cat+" "+c.k+" "+c.what).toLowerCase().includes(ql));
+  $("#conds").innerHTML = list.length ? list.map(c => `
+    <details class="cond">
+      <summary><h3>${esc(c.n)}</h3><span class="cat">RPwD category: ${esc(c.cat)}</span><span class="plus" aria-hidden="true"></span></summary>
+      <div class="cond-body">
+        <div class="stack">
+          <p>${esc(c.what)}</p>
+          <div><strong>What people often notice</strong><ul style="margin-top:.3rem">${c.signs.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+          <p>${esc(c.india)}</p>
+        </div>
+        <div class="side">
+          <p><strong>First step</strong><br>${esc(c.start)}</p>
+          <p><strong>Connect with</strong><br>${c.orgs.map(o=>`<a href="${esc(o[1])}" target="_blank" rel="noopener">${esc(o[0])}</a>`).join("<br>")}</p>
+        </div>
+      </div>
+    </details>`).join("") : `<p class="muted">Nothing matches “${esc(q)}”. Try another word, or see the list of 21 disabilities above.</p>`;
+}
+renderConds();
+$("#cond-q").addEventListener("input", e => renderConds(e.target.value));
+let mi = 0;
+function renderMyth(){ $("#myth-count").textContent = `Myth ${mi+1} of ${MYTHS.length}`; $("#myth-m").textContent = MYTHS[mi][0]; $("#myth-f").textContent = MYTHS[mi][1]; }
+$("#myth-next").addEventListener("click", () => { mi = (mi+1) % MYTHS.length; renderMyth(); });
+$("#myth-prev").addEventListener("click", () => { mi = (mi-1+MYTHS.length) % MYTHS.length; renderMyth(); });
+renderMyth();
+$("#words").innerHTML = WORDS.map(w => `<tr><td>${esc(w[0])}</td><td>${esc(w[1])}</td><td class="small">${esc(w[2])}</td></tr>`).join("");
+
+/* ---------- toolkit ---------- */
+$("#steps").innerHTML = STEPS.map(s => `<li><div><h3>${esc(s[0])}</h3><p class="muted" style="margin-top:.35rem">${esc(s[1])}</p></div><ul>${s[2].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></li>`).join("");
+const DIR_FILTERS = [["all","All"],["gov","Government"],["autism","Autism"],["blind","Vision"],["cp","Cerebral palsy"],["md","Muscular dystrophy"],["ld","Learning"],["blood","Thalassemia"],["leprosy","Leprosy"],["other","Other"]];
+const dirMatch = (r, f) => { const s = (r[2]+" "+r[3]).toLowerCase(); return f==="all" || (f==="gov" && r[3]==="Government") || (f==="autism" && s.includes("autism")) || (f==="blind" && s.includes("blind")) || (f==="cp" && s.includes("cp")) || (f==="md" && s.includes("muscular")) || (f==="ld" && s.includes("learning")) || (f==="blood" && (s.includes("thalass")||s.includes("sickle"))) || (f==="leprosy" && s.includes("leprosy")) || (f==="other" && /spina|down|epilep|sclerosis|jobs|therapy|hearing/.test(s)); };
+let dirF = "all";
+function renderDir(){
+  $("#dir-filter").innerHTML = DIR_FILTERS.map(f => `<button type="button" data-f="${f[0]}" aria-pressed="${f[0]===dirF}">${esc(f[1])}</button>`).join("");
+  $("#dir").innerHTML = DIR.filter(r => dirMatch(r, dirF)).map(r => `<tr><td><a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[0])}</a></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td></tr>`).join("");
+}
+$("#dir-filter").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if(b){ dirF = b.dataset.f; renderDir(); $(`#dir-filter [data-f="${dirF}"]`).focus(); } });
+renderDir();
+
+/* ---------- news ---------- */
+let newsF = "all", liveNews = [];
+function allNews(){ const all = [...liveNews, ...NEWS].filter((x,i,arr) => arr.findIndex(y => y.u===x.u && y.h===x.h)===i); return all.sort((a,b) => String(b.d).localeCompare(String(a.d))); }
+function renderNews(){
+  const items = allNews();
+  $("#news-filter").innerHTML = [["all","All"],["ruling","Court rulings"],["policy","Policy"],["data","Data"],["news","Reports"]].map(f => `<button type="button" data-f="${f[0]}" aria-pressed="${f[0]===newsF}">${esc(f[1])}</button>`).join("");
+  $("#news-list").innerHTML = items.filter(n => newsF==="all" || n.t===newsF).map(n => `
+    <article class="item">
+      <time datetime="${esc(n.d)}">${esc(fmtDate(n.d))}</time>
+      <div class="body">
+        <div><span class="tag ${esc(n.t)}">${esc(KIND[n.t]||"News")}</span></div>
+        <h3>${esc(n.h)}</h3>
+        <p>${esc(n.s)}</p>
+        ${n.w ? `<p class="why"><strong>Why it matters:</strong> ${esc(n.w)}</p>` : ""}
+        <p class="small muted">Source: <a href="${esc(n.u)}" target="_blank" rel="noopener">${esc(n.src)}</a></p>
+      </div>
+    </article>`).join("");
+  $("#home-latest").innerHTML = items.slice(0,4).map(n => `<li><span><span class="tag ${esc(n.t)}">${esc(KIND[n.t]||"News")}</span> <span class="when">${esc(fmtDate(n.d))}</span></span><a href="${esc(n.u)}" target="_blank" rel="noopener">${esc(n.h)}</a></li>`).join("");
+}
+$("#news-filter").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if(b){ newsF = b.dataset.f; renderNews(); $(`#news-filter [data-f="${newsF}"]`).focus(); } });
+renderNews();
+
+/* ---------- ideas ---------- */
+const IDEA_EXTRA = {
+  tactile:  {from:"Japan", sum:"Raised yellow tiles that guide blind people safely along streets and onto platforms.", big:"1967", bigl:"first laid in Okayama, Japan"},
+  atw:      {from:"United Kingdom", sum:"A government fund that pays for the adjustments disabled employees need at work.", big:"74,200", bigl:"people funded in 2024–25"},
+  sunflower:{from:"United Kingdom", sum:"A green lanyard that quietly tells staff someone has a hidden disability.", big:"3M+", bigl:"lanyards given out worldwide"},
+  bme:      {from:"Denmark", sum:"An app that connects blind people to sighted volunteers by video call.", big:"10M", bigl:"volunteers in 150+ countries"},
+  signai:   {from:"United Kingdom", sum:"Train screens that show announcements in sign language for deaf passengers.", big:"2024", bigl:"first trial on UK trains"},
+  taxi:     {from:"United Kingdom", sum:"A licensing rule that made a whole city’s taxi fleet wheelchair accessible.", big:"1989", bigl:"rule for every new London cab"}
+};
+let ideaI = -1;
+function renderIdeas(focus){
+  const box = $("#ideas-body");
+  if(ideaI < 0){
+    box.innerHTML = `<div class="idea-grid">${CASES.map((c,i) => { const x = IDEA_EXTRA[c.id]; return `
+      <button type="button" class="idea-card" data-i="${i}">
+        <span class="route"><span>${esc(x.from)}</span><i></i><span class="in">India</span></span>
+        <span class="in-card">
+          <strong class="ttl">${esc(c.title)}</strong>
+          <span class="sum">${esc(x.sum)}</span>
+          <span class="stat-line"><span class="big">${esc(x.big)}</span><span class="small muted">${esc(x.bigl)}</span></span>
+        </span>
+        <span class="go">Read the plan for India →</span>
+      </button>`; }).join("")}</div>`;
+    if(focus){ const b = $(`.idea-card[data-i="${focus}"]`); if(b) b.focus(); }
+    return;
+  }
+  const c = CASES[ideaI], x = IDEA_EXTRA[c.id], pid = "idea-" + c.id;
+  const prev = CASES[(ideaI-1+CASES.length)%CASES.length], next = CASES[(ideaI+1)%CASES.length];
+  const n = tallies().counts[pid] || 0;
+  box.innerHTML = `
+    <article class="detail">
+      <div><button type="button" class="btn ghost small" data-back>← All ideas</button></div>
+      <header class="d-hero">
+        <div class="stack">
+          <p class="from">From ${esc(x.from)} to India</p>
+          <h2 id="idea-h" tabindex="-1">${esc(c.title)}</h2>
+          <p>${esc(x.sum)}</p>
+        </div>
+        <div><span class="bignum">${esc(x.big)}</span><p class="small" style="margin-top:.3rem">${esc(x.bigl)}</p></div>
+      </header>
+      <div class="compare">
+        <div class="there"><h3>How it works in ${esc(x.from)}</h3><p>${esc(c.what)}</p><p class="small">${c.facts.map(esc).join(" · ")}</p></div>
+        <div class="here"><h3>Where India is today</h3><p>${esc(c.india)}</p></div>
+      </div>
+      <section aria-labelledby="road-h"><h2 id="road-h" style="font-size:1.6rem;margin-bottom:1.2rem">How India could bring it here</h2><ol class="road">${c.adapt.map(a => `<li><span>${esc(a)}</span></li>`).join("")}</ol></section>
+      <section><h3 style="margin-bottom:.6rem">Who can make it happen</h3><div class="who">${c.who.split(/,\s*/).map(w => `<span>${esc(w)}</span>`).join("")}</div></section>
+      <section class="lobby" aria-labelledby="lobby-h">
+        <div class="stack"><h2 id="lobby-h">Want this in India? Let’s lobby for it.</h2><p>Sign the petition and we’ll take this plan to ${esc(c.who.split(/,\s*/)[0])} once 1,000 people have signed.</p></div>
+        <div style="display:grid;gap:.6rem;justify-items:start"><span><span class="count">${fmtN(n)}</span> signed</span><button type="button" class="btn" data-lobby="${esc(pid)}">${signedHere(pid) ? "You’ve signed. View petition" : "Sign the petition"}</button></div>
+      </section>
+      <p class="small muted">Sources: ${c.src.map(s=>`<a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join(" · ")}</p>
+      <nav class="prevnext" aria-label="More ideas">
+        <button type="button" class="btn ghost small" data-go="${(ideaI-1+CASES.length)%CASES.length}">← ${esc(prev.title)}</button>
+        <button type="button" class="btn small" data-go="${(ideaI+1)%CASES.length}">${esc(next.title)} →</button>
+      </nav>
+    </article>`;
+  const h = $("#idea-h"); if(h && focus !== false) h.focus({preventScroll:true});
+}
+$("#ideas-body").addEventListener("click", e => {
+  const card = e.target.closest(".idea-card"), back = e.target.closest("[data-back]"), go = e.target.closest("[data-go]");
+  if(card){ ideaI = +card.dataset.i; renderIdeas(); $("#v-ideas").scrollIntoView(); }
+  else if(back){ const was = ideaI; ideaI = -1; renderIdeas(String(was)); }
+  else if(go){ ideaI = +go.dataset.go; renderIdeas(); $("#v-ideas").scrollIntoView(); }
+  else if(e.target.closest("[data-lobby]")){ const pid = e.target.closest("[data-lobby]").dataset.lobby; petI = PETS.findIndex(p => p.id === pid); renderPetList(); renderPetDetail(); location.hash = "#act"; }
+});
+
+/* ---------- shared state ---------- */
+const S = { mode:"none", db:null, uid:null, owner:false, signerDocs:[], mine:null, pledges:[], fund:null, causes:null, contacts:[], messages:[], sheet:null };
+
+function tallies(){
+  const by = {}, counts = {}; PETS.forEach(p => { by[p.id] = []; counts[p.id] = 0; });
+  if(S.mode==="sheets" && S.sheet){ PETS.forEach(p => { by[p.id] = (S.sheet.recent||{})[p.id] || []; counts[p.id] = (S.sheet.counts||{})[p.id] || 0; }); return {by, counts}; }
+  S.signerDocs.forEach(d => { const sg = d.sigs || {}; Object.keys(sg).forEach(pid => { if(!by[pid]) return; counts[pid]++; by[pid].push(sg[pid]); }); });
+  PETS.forEach(p => by[p.id].sort((a,b) => String(b.at).localeCompare(String(a.at))));
+  return {by, counts};
+}
+
+/* ---------- petitions ---------- */
+CASES.forEach(c => { const who = c.who; PETS.push({ id:"idea-"+c.id, idea:true, goal:1000, tag:"Idea from abroad", title:c.title,
+  ask:`We ask ${who} to bring this to India: ${IDEA_EXTRA[c.id].sum.charAt(0).toLowerCase() + IDEA_EXTRA[c.id].sum.slice(1)}`,
+  why:[c.what, c.india], plan:c.adapt, route:who, deadline:"Rolling. First delivery at 1,000 signatures." }); });
+let petI = 0;
+const signedHere = pid => !!(S.mine && S.mine.sigs && S.mine.sigs[pid]) || store("dvi-signed-"+pid)==="1";
+function renderPetList(){
+  const {counts} = tallies();
+  const item = (p,i) => `<li><button type="button" data-i="${i}" aria-current="${i===petI}"><strong>${esc(p.title)}</strong><span>${fmtN(counts[p.id])} signed${signedHere(p.id) ? " · you signed" : ""}</span></button></li>`;
+  $("#pet-list").innerHTML = `<li class="pet-group">Main petitions</li>` + PETS.map((p,i) => p.idea ? "" : item(p,i)).join("") + `<li class="pet-group">Bring ideas from abroad to India</li>` + PETS.map((p,i) => p.idea ? item(p,i) : "").join("");
+}
+function renderPetDetail(){
+  const p = PETS[petI];
+  const opts = STATES.map(s => `<option>${esc(s)}</option>`).join("");
+  $("#pet").innerHTML = `
+    <article class="pet-card" aria-labelledby="pet-h">
+      <div class="pet-top"><div><span class="tag">${esc(p.tag)}</span></div><h2 id="pet-h">${esc(p.title)}</h2><p style="font-size:1.05rem">${esc(p.ask)}</p></div>
+      <div class="pet-grid">
+        <div class="pet-main">
+          <div><h3 style="margin-bottom:.4rem">Why now</h3><ul>${p.why.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>
+          <div><h3 style="margin-bottom:.4rem">Our plan of action</h3><ol class="plan">${p.plan.map(w=>`<li><span>${esc(w)}</span></li>`).join("")}</ol></div>
+          <div><h3 style="margin-bottom:.4rem">Delivered to</h3><p>${esc(p.route)}</p></div>
+          <p class="small muted"><strong>Timing:</strong> ${esc(p.deadline)}</p>
+        </div>
+        <div class="pet-side">
+          <div class="meter"><span class="n" id="pc">0</span> <span class="small muted" id="pg"></span><div class="bar" aria-hidden="true"><i id="pb"></i></div></div>
+          <div id="pet-form-wrap"></div>
+          <div><h4 style="margin-bottom:.4rem">Recent signers</h4><div class="wall" id="pn"></div></div>
+        </div>
+      </div>
+    </article>`;
+  $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<p class="thanks">You’ve signed this petition. Thank you.</p>` : `
+    <form class="f" id="sign-form" novalidate>
+      <label for="sf-name">Full name<input id="sf-name" type="text" maxlength="80" autocomplete="name"></label>
+      <label for="sf-email">Email<input id="sf-email" type="email" maxlength="120" autocomplete="email"></label>
+      <div class="two">
+        <label for="sf-city">City or town<input id="sf-city" type="text" maxlength="60" autocomplete="address-level2"></label>
+        <label for="sf-state">State or UT<select id="sf-state"><option value="">Choose…</option>${opts}</select></label>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="sf-web">Leave this empty<input id="sf-web" type="text" tabindex="-1" autocomplete="off"></label></div>
+      <label class="check"><input type="checkbox" id="sf-pub" checked>Show my first name, last initial and city on this page</label>
+      <label class="check"><input type="checkbox" id="sf-upd">Email me when this petition is delivered</label>
+      <label class="check"><input type="checkbox" id="sf-ok">I support this petition and these are my real details</label>
+      <div><button class="btn yellow" type="submit">Sign this petition</button></div>
+      <p class="status" id="sf-status" role="status"></p>
+      <p class="small muted">Your email is never shown publicly or shared.${S.mode==="sheets" ? " We’ll email you a link to confirm your signature." : ""}</p>
+    </form>`;
+  const f = $("#sign-form"); if(f) f.addEventListener("submit", e => { e.preventDefault(); sign(p.id); });
+  updatePetNumbers();
+}
+function updatePetNumbers(){
+  const p = PETS[petI]; const {by, counts} = tallies(); const n = counts[p.id];
+  $("#pc").textContent = fmtN(n);
+  const left = Math.max(0, p.goal - n);
+  $("#pg").textContent = left ? `signed. ${fmtN(left)} more to reach ${fmtN(p.goal)} and trigger our first delivery.` : `signed. Milestone reached. We’re preparing the delivery.`;
+  $("#pb").style.width = Math.min(100, n / p.goal * 100) + "%";
+  const pub = by[p.id].filter(s => s && s.n).slice(0, 40);
+  $("#pn").innerHTML = pub.length ? pub.map(s => `<span>${esc(s.n)}${s.c ? ", " + esc(s.c) : ""}</span>`).join("") + (n > pub.length ? `<span class="muted" style="border:0;background:none">+ ${fmtN(n - pub.length)} more</span>` : "") : `<span class="muted" style="border:0;background:none;padding:0">${n ? fmtN(n) + " people have signed privately." : "No one yet. You could be first."}</span>`;
+}
+$("#pet-list").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if(b){ petI = +b.dataset.i; renderPetList(); renderPetDetail(); $(`#pet-list [data-i="${petI}"]`).focus(); } });
+renderPetList(); renderPetDetail();
+
+async function post(payload){
+  const r = await fetch(CONFIG.SHEETS_ENDPOINT, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+  const j = await r.json(); if(!j.ok) throw { code: j.error || "server" }; return j;
+}
+
+async function sign(pid){
+  const st = $("#sf-status");
+  if($("#sf-web").value) return; // bot trap
+  const name = $("#sf-name").value.trim(), email = $("#sf-email").value.trim(), city = $("#sf-city").value.trim(), state = $("#sf-state").value;
+  if(!name || !city || !state){ setStatus(st, "Please fill in your name, city and state.", "bad"); return; }
+  if(!validEmail(email)){ setStatus(st, "Please enter a valid email address.", "bad"); $("#sf-email").focus(); return; }
+  if(!$("#sf-ok").checked){ setStatus(st, "Please tick the box confirming you support this petition.", "bad"); return; }
+  const pub = $("#sf-pub").checked, updates = $("#sf-upd").checked, at = new Date().toISOString();
+  const btn = $("#sign-form button[type=submit]"); btn.disabled = true; setStatus(st, "Saving…");
+  try{
+    if(S.mode==="db"){
+      const sigs = (S.mine && S.mine.sigs) ? {...S.mine.sigs} : {};
+      sigs[pid] = { n: pub ? shortName(name) : "", c: pub ? city.slice(0,40) : "", s: state, at };
+      await S.db.doc("signers/" + S.uid).set({ sigs, updatedAt: at });
+      const ref = S.db.doc("contacts/" + S.uid); const old = await ref.get().then(s => s.exists ? s.data() : {}).catch(() => ({}));
+      await ref.set({ name, email, city, state, updates: updates || !!old.updates, petitions: Array.from(new Set([...(old.petitions||[]), pid])), firstAt: old.firstAt || at, lastAt: at });
+      store("dvi-signed-"+pid, "1"); renderPetList(); renderPetDetail();
+      const t = $(".thanks"); if(t){ t.setAttribute("tabindex","-1"); t.focus(); }
+    } else if(S.mode==="sheets"){
+      await post({ action:"sign", petition: pid, name, email, city, state, pub, updates });
+      setStatus(st, "Almost done. Check your email and click the link to confirm your signature.", "ok");
+      store("dvi-signed-"+pid, "1");
+    } else throw { code:"offline" };
+  }catch(e){
+    const c = e && e.code;
+    setStatus(st, c==="invalid_argument" ? "This page is view-only for you, so your signature couldn’t be saved. Ask the owner for Contributor access." : c==="duplicate" ? "This email has already signed this petition." : c==="offline" ? "Signing isn’t switched on for this copy of the site yet." : "Something went wrong. Please check your connection and try again.", "bad");
+  }finally{ btn.disabled = false; }
+}
+
+/* ---------- give ---------- */
+function renderFund(){
+  const list = (S.causes && S.causes.items && S.causes.items.length) ? S.causes.items : CAUSES.map(c => ({name:c[0], focus:c[1], where:c[2], url:c[3]}));
+  $("#causes").innerHTML = list.map(c => `<div class="cause"><h3>${esc(c.name)}</h3><p>${esc(c.focus)}</p><span class="where">${esc(c.where)}</span>${c.appeal ? `<p class="small"><strong>Current appeal:</strong> ${esc(c.appeal)}</p>` : ""}<a class="btn yellow small" href="${esc(c.url)}" target="_blank" rel="noopener">Donate</a></div>`).join("");
+}
+
+/* ---------- contact ---------- */
+$("#contact-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const st = $("#ct-status"); if($("#ct-web").value) return;
+  const name = $("#ct-name").value.trim(), email = $("#ct-email").value.trim(), why = $("#ct-why").value, msg = $("#ct-msg").value.trim();
+  if(!name || !msg){ setStatus(st, "Please add your name and a message.", "bad"); return; }
+  if(!validEmail(email)){ setStatus(st, "Please enter a valid email so I can reply.", "bad"); $("#ct-email").focus(); return; }
+  const btn = e.target.querySelector("button"); btn.disabled = true; setStatus(st, "Sending…");
+  try{
+    const at = new Date().toISOString();
+    if(S.mode==="db"){
+      const ref = S.db.doc("messages/" + S.uid); const old = await ref.get().then(s => s.exists ? s.data() : {}).catch(() => ({}));
+      const history = (old.history || []).slice(-19); history.push({ why, text: msg.slice(0,3000), at });
+      await ref.set({ name, email, history, lastAt: at });
+    } else if(S.mode==="sheets") await post({ action:"contact", name, email, why, message: msg });
+    else throw {code:"offline"};
+    setStatus(st, "Sent. Thank you for writing. I’ll reply by email.", "ok"); e.target.reset();
+  }catch(err){ setStatus(st, err.code==="invalid_argument" ? "This page is view-only for you, so the message couldn’t be sent. Please reach me on Instagram or LinkedIn." : err.code==="offline" ? "The form isn’t switched on for this copy of the site yet. Please reach me on Instagram or LinkedIn." : "Couldn’t send. Please try again.", "bad"); }
+  finally{ btn.disabled = false; }
+});
+
+/* ---------- admin (owner only; data is protected by server-side access rules) ---------- */
+const petTitle = id => (PETS.find(p => p.id===id) || {title:id}).title;
+function renderAdmin(){
+  if(!S.owner) return;
+  const {counts} = tallies();
+  $("#adm-counts").textContent = PETS.map(p => `${p.title}: ${fmtN(counts[p.id])}`).join(" · ");
+  const rows = [...S.contacts].sort((a,b) => String(b.lastAt).localeCompare(String(a.lastAt)));
+  $("#adm-rows").innerHTML = rows.length ? rows.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.email)}</td><td>${esc(c.city)}</td><td>${esc(c.state)}</td><td>${esc((c.petitions||[]).join(", "))}</td><td>${c.updates?"Yes":"No"}</td><td>${esc(String(c.firstAt||"").slice(0,10))}</td></tr>`).join("") : `<tr><td colspan="7" class="muted">No signatures yet.</td></tr>`;
+  const msgs = []; S.messages.forEach(m => (m.history||[]).forEach(h => msgs.push({name:m.name, email:m.email, ...h})));
+  msgs.sort((a,b) => String(b.at).localeCompare(String(a.at)));
+  $("#adm-msgs").innerHTML = msgs.length ? msgs.map(m => `<tr><td>${esc(String(m.at).slice(0,10))}</td><td>${esc(m.name)}</td><td>${esc(m.email)}</td><td>${esc(m.why)}</td><td style="white-space:pre-wrap">${esc(m.text)}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">No messages yet.</td></tr>`;
+}
+const ADMIN_HTML = `
+<section class="view" id="v-admin" data-view="admin" aria-labelledby="h-admin" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-admin">Admin</h1><p class="lead">Only you can see this tab. Signer emails and messages are protected by the page’s access rules, so nobody else can read them.</p></div>
+    <div class="panel box"><h2>Messages</h2><div class="scroll"><table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Writing as</th><th>Message</th></tr></thead><tbody id="adm-msgs"></tbody></table></div></div>
+    <div class="panel box">
+      <h2>Signatures</h2>
+      <p id="adm-counts" style="margin:.5rem 0"></p>
+      <p><button class="btn small" type="button" id="adm-export">Download signatures (CSV)</button> <span class="status" id="adm-ex-status" role="status"></span></p>
+      <div class="scroll" style="margin-top:1rem"><table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>State</th><th>Petitions</th><th>Updates?</th><th>Signed</th></tr></thead><tbody id="adm-rows"></tbody></table></div>
+    </div>
+    <div class="panel box">
+      <h2>Post a news item</h2>
+      <form id="adm-news" class="formgrid">
+        <label for="an-date">Date<input id="an-date" type="date"></label>
+        <label for="an-type">Type<select id="an-type"><option value="ruling">Ruling</option><option value="policy">Policy</option><option value="data">Data</option><option value="news">Report</option></select></label>
+        <label for="an-source">Source<input id="an-source" type="text" placeholder="LiveLaw"></label>
+        <label for="an-url">Link<input id="an-url" type="url" placeholder="https://"></label>
+        <label for="an-title" style="grid-column:1/-1">Headline<input id="an-title" type="text"></label>
+        <label for="an-sum" style="grid-column:1/-1">Summary<textarea id="an-sum" rows="2"></textarea></label>
+        <label for="an-why" style="grid-column:1/-1">Why it matters<textarea id="an-why" rows="2"></textarea></label>
+        <div><button class="btn small" type="submit">Post</button> <span class="status" id="an-status" role="status"></span></div>
+      </form>
+    </div>
+  </div>
+</section>`;
+// The admin tab and its markup are added to the page only after the platform confirms the viewer is the owner.
+function mountAdmin(){
+  if($("#v-admin")) return;
+  $("#admin-slot").innerHTML = ADMIN_HTML;
+  const tab = document.createElement("a"); tab.href = "#admin"; tab.textContent = "Admin"; $("#tabs").appendChild(tab);
+$("#adm-news").addEventListener("submit", async e => {
+  e.preventDefault(); const st = $("#an-status"), u = $("#an-url").value.trim();
+  const item = { d: $("#an-date").value, t: $("#an-type").value, src: $("#an-source").value.trim(), u, h: $("#an-title").value.trim(), s: $("#an-sum").value.trim(), w: $("#an-why").value.trim(), addedAt: new Date().toISOString() };
+  if(!/^https:\/\//.test(u)){ setStatus(st, "The link must start with https://", "bad"); return; }
+  if(!item.d || !item.h || !item.s || !item.src){ setStatus(st, "Fill in the date, source, headline and summary.", "bad"); return; }
+  try{ await S.db.collection("updates").add(item); setStatus(st, "Posted", "ok"); e.target.reset(); }catch(err){ setStatus(st, "Couldn’t post. Try again.", "bad"); }
+});
+$("#adm-export").addEventListener("click", async () => {
+  const st = $("#adm-ex-status"), q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const lines = [["name","email","city","state","petitions","wants_updates","first_signed","last_signed"].join(",")].concat(S.contacts.map(c => [c.name,c.email,c.city,c.state,(c.petitions||[]).map(petTitle).join("; "),c.updates?"yes":"no",c.firstAt,c.lastAt].map(q).join(",")));
+  try{ const dl = await window.claude.use("downloads"); if(!dl){ setStatus(st, "Downloads aren’t available here.", "bad"); return; } await dl.save({ filename:`dvi-signatures-${new Date().toISOString().slice(0,10)}.csv`, data: lines.join("\n") }); setStatus(st, "", ""); }
+  catch(e){ if(e && e.code !== "declined") setStatus(st, "Couldn’t create the file.", "bad"); }
+});
+
+}
+
+/* ---------- backends ---------- */
+async function loadSheet(){ const r = await fetch(CONFIG.SHEETS_ENDPOINT + "?action=summary"); S.sheet = await r.json(); renderPetList(); updatePetNumbers(); renderFund(); }
+function refreshPet(){ renderPetList(); updatePetNumbers(); }
+
+async function boot(){
+  renderFund(); renderIdeas(false); route(true);
+  let db = null, user = null;
+  if(window.claude && typeof window.claude.use === "function"){
+    try{ [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]); }catch(e){ db = null; }
+  }
+  if(db && user){
+    const uid = await user.id();
+    S.db = db; S.uid = uid; S.mode = uid ? "db" : "none"; S.owner = await user.isOwner();
+    db.collection("signers").onSnapshot(snap => {
+      S.signerDocs = snap.docs.map(d => d.data() || {});
+      const mine = uid ? snap.docs.find(d => d.id === uid) : null; const had = S.mine; S.mine = mine ? mine.data() : null;
+      refreshPet(); if(!had && S.mine && $("#sign-form") && signedHere(PETS[petI].id)) renderPetDetail(); renderAdmin();
+    }, () => {});
+    db.doc("site/causes").onSnapshot(s => { S.causes = s.exists ? s.data() : null; renderFund(); }, () => {});
+    db.collection("updates").onSnapshot(snap => { liveNews = snap.docs.map(d => d.data() || {}).filter(n => n.h && n.u); renderNews(); }, () => {});
+    if(!uid) setStatus($("#backend-note"), "Sign in to claude.ai to add your signature.", "");
+    if(S.owner){
+      mountAdmin();
+      db.collection("contacts").onSnapshot(snap => { S.contacts = snap.docs.map(d => ({id:d.id, ...(d.data()||{})})); renderAdmin(); }, () => {});
+      db.collection("messages").onSnapshot(snap => { S.messages = snap.docs.map(d => d.data() || {}); renderAdmin(); }, () => {});
+      if(location.hash === "#admin") route(true);
+    }
+  } else if(CONFIG.SHEETS_ENDPOINT){
+    S.mode = "sheets"; renderPetDetail();
+    try{ await loadSheet(); }catch(e){ setStatus($("#backend-note"), "Live counts couldn’t load just now. You can still sign.", ""); }
+  } else {
+    setStatus($("#backend-note"), "Signing opens soon on this copy of the site.", "");
+  }
+}
+
+/* ---------- Google Translate (works on your own domain; blocked inside claude.ai previews) ---------- */
+window.googleTranslateElementInit = function(){
+  try{ new google.translate.TranslateElement({ pageLanguage:"en", includedLanguages:"hi,mr,bn,ta,te,kn,ml,gu,pa,ur,or,as,en", layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay:false }, "gt"); }catch(e){}
+};
+(function(){
+  const s = document.createElement("script");
+  s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  s.async = true; s.onerror = () => { $("#gt").hidden = true; };
+  document.body.appendChild(s);
+})();
+
+boot();
+</script>
+
+</body>
+</html>
