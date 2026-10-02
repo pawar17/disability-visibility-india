@@ -192,6 +192,8 @@ th{font-size:.85rem;color:var(--muted);font-weight:650}
 .support-now .big-num{display:block;font-size:2.4rem;font-weight:750;line-height:1;color:var(--sos-ink);font-variant-numeric:tabular-nums;margin-bottom:.3rem}
 .support-tips h2{font-size:1.4rem}
 .support-tips li{font-weight:500}
+.sup-table td:first-child{min-width:15rem}
+.sup-note{font-size:.88rem;color:var(--muted);margin-top:.25rem}
 
 /* news */
 .news{border-top:1px solid var(--line)}
@@ -481,14 +483,15 @@ body{top:0!important}
           <li>Groups share experiences, not medical advice. Check anything important with your doctor or therapist.</li>
           <li>Keep your child’s full name, school and address out of public posts.</li>
           <li>Most Facebook groups ask a few questions before letting you in. Answer them so the admins know you’re a parent or carer.</li>
+          <li>Can’t find a group for your disability? Ask your nearest organisation in the <a href="#toolkit">Toolkit directory</a>. Many run their own parent meetings.</li>
         </ul>
       </div>
     </div>
     <div style="margin-top:2.5rem">
       <h2>Support groups by disability</h2>
       <div class="filters" id="sup-filter" role="group" aria-label="Filter support groups by disability"></div>
-      <div class="scroll"><table class="dir"><thead><tr><th scope="col">Group</th><th scope="col">For</th><th scope="col">Who it’s for</th><th scope="col">Where it meets</th></tr></thead><tbody id="sup"></tbody></table></div>
-      <p class="muted small" style="margin-top:.8rem">Run a support group, or know one we should list? <a href="#about">Tell me</a> and I’ll add it.</p>
+      <div class="scroll"><table class="dir sup-table"><thead><tr><th scope="col">Group</th><th scope="col">For</th><th scope="col">Who it’s for</th><th scope="col">Where it meets</th></tr></thead><tbody id="sup"></tbody></table></div>
+      <p class="muted small" style="margin-top:.8rem">Every group was checked in October 2026 to make sure it still exists and is active. Run a support group, or know one we should list? <a href="#about">Tell me</a> and I’ll add it.</p>
     </div>
   </div>
 </section>
@@ -748,28 +751,43 @@ const STEPS = [
 ];
 
 const SUPPORT = [
- // [name, link, disability, filter key, where it meets, who it's for]
- ["Autism India Parent Support Group","https://www.facebook.com/groups/616935402235954/","Autism","autism","Facebook group","Parents"],
- ["Indian Autism Hub","https://www.facebook.com/groups/584599718218270/","Autism","autism","Facebook group","Parents and autistic adults"],
- ["Childhood Autism India","https://www.facebook.com/groups/423756421849882/","Autism","autism","Facebook group","Parents"],
- ["Action For Autism community","https://www.facebook.com/groups/aguha/","Autism","autism","Facebook group","Parents"],
- ["Autism, Intellectual Disability and ADHD support group","https://www.facebook.com/groups/248896349373160/","Autism, intellectual disability, ADHD","autism","Facebook group","Parents"],
- ["Humsafar","https://www.facebook.com/groups/Hamsafar.India/","Cerebral palsy","cp","Facebook group","Parents and people with CP"],
- ["DoST support group for Down syndrome","https://www.facebook.com/groups/861637920534683/","Down syndrome","ld","Facebook group","Parents"],
- ["Blind and Visually Impaired Tips, Tricks and How-To’s","https://www.facebook.com/groups/784656165003348/","Blindness and low vision","blind","Facebook group","Blind and low-vision people"],
- ["Blind Stars Beyond Facebook: Bridging the Gap","https://www.facebook.com/groups/blindstar/","Blindness and low vision","blind","Facebook group","Blind and low-vision people"],
- ["Colour Blindness Awareness","https://www.facebook.com/groups/ColourblindnessAwareness/","Colour blindness","blind","Facebook group","Everyone"],
- ["Indian Association of Muscular Dystrophy","https://www.facebook.com/groups/iamdsolan/","Muscular dystrophy","md","Facebook group","Families and patients"],
- ["Limb Girdle Muscular Dystrophy India","https://www.facebook.com/groups/533795430014169/","Muscular dystrophy","md","Facebook group","Families and patients"],
- ["Spina Bifida Foundation India","https://www.facebook.com/spinabifidafoundation.org/","Spina bifida","other","Facebook page","Families"],
- ["Uttarakhand Chapter, Spina Bifida Foundation","https://www.facebook.com/Uttarakhand-Chapter-of-Spina-Bifida-FoundationIndia-690463231319284/","Spina bifida","other","Facebook page","Families in Uttarakhand"],
- ["The Little People of India","https://www.facebook.com/littlepeopleindia/","Dwarfism","other","Facebook page","People with dwarfism and families"],
- ["Multiple Sclerosis Society of India","https://www.mssocietyindia.org/","Multiple sclerosis","other","Website, local chapters","People with MS and carers"],
- ["Dyslexia Association of India","https://www.dyslexiaindia.org.in/","Dyslexia","ld","Website","Parents and teachers"],
- ["Mimaansa","http://mimaansa.org/","Learning disabilities","ld","Website","Parents and students"],
- ["Sasakawa-India Leprosy Foundation","https://silf.in/","Leprosy","other","Website","People affected by leprosy"],
- ["Bombay Leprosy Project","https://www.bombayleprosy.org/","Leprosy","other","Website","People affected by leprosy"],
- ["The Leprosy Mission Trust India","https://www.leprosymission.in/","Leprosy","other","Website","People affected by leprosy"]
+ // [name, link, for, filter key, how it meets, who it's for, what to expect]   Checked October 2026.
+ ["Action For Autism community","https://www.facebook.com/groups/aguha/","Autism","autism","Facebook group (public)","Parents and carers","13,000+ members. Run by India’s national autism society."],
+ ["Autism, ADHD and Intellectual Disability Support Group, India","https://www.facebook.com/groups/248896349373160/","Autism, ADHD, intellectual disability","autism","Facebook group (private)","Parents","9,500+ members. Admins remove therapies that aren’t research-based."],
+ ["Indian Autism Hub","https://www.facebook.com/groups/584599718218270/","Autism","autism","Facebook group (public)","Parents and autistic adults","5,000+ members and new posts daily. Some posts are ads for therapy centres."],
+ ["Forum For Autism","https://www.facebook.com/ForumForAutism/","Autism","autism","Parent-run trust, Mumbai","Parents","Started by parents in 2001. Meetings and events in Mumbai."],
+ ["Nayi Disha parent support groups","https://nayi-disha.org/support-groups/","Autism, ADHD, Down syndrome, intellectual disability, cerebral palsy","idd","WhatsApp groups by city and language","Parents","30+ groups, including Hindi, Telugu, Marathi and Bengali, and a group for parents of teenagers and adults."],
+ ["Parivaar (National Confederation of Parents Organisations)","https://www.parivaarncpo.org/","Intellectual and developmental disabilities","idd","Network of local parent associations","Parents, and self-advocates through SAFI","310+ parent associations across 31 states. Contact them to find one near you."],
+ ["DoST support group for Down syndrome","https://www.facebook.com/groups/861637920534683/","Down syndrome","idd","Facebook group (public)","Parents and carers","3,000 members. Based in Kerala, open to families anywhere."],
+ ["Down Syndrome Support Group India","https://www.facebook.com/DownSyndromeSupportGroupIndia/","Down syndrome","idd","Facebook page","Parents and carers","Short videos and advice for parents, such as choosing a school."],
+ ["Humsafar","https://www.facebook.com/groups/Hamsafar.India/","Cerebral palsy","cp","Facebook group (private)","People with CP and parents","1,700 members. Send the admin a short introduction when you ask to join."],
+ ["AccessIndia","https://www.freelists.org/list/accessindia","Blindness and low vision","vision","Email list","Blind and low-vision people","India’s biggest email community of blind people. Daily discussion on technology, jobs and rights."],
+ ["Blind Stars Beyond Facebook","https://www.facebook.com/groups/blindstar/","Blindness and low vision","vision","Facebook group (public)","Blind and sighted members","4,000 members, active every week."],
+ ["National Federation of the Blind, India","https://www.nfbindia.org/","Blindness and low vision","vision","Membership organisation","Blind people","Self-help organisation run by blind people: “Let the Blind Lead the Blind”."],
+ ["Colour Blindness Awareness","https://www.facebook.com/groups/ColourblindnessAwareness/","Colour blindness","vision","Facebook group (public)","Everyone","11,000 members, based in Delhi."],
+ ["Blind and Visually Impaired Tips, Tricks and How-To’s","https://www.facebook.com/groups/784656165003348/","Blindness and low vision","vision","Facebook group (public)","Blind and low-vision people","International, very active. Good for everyday how-to questions."],
+ ["National Association of the Deaf, India","https://nadindia.org/","Deaf and hard of hearing","hearing","Deaf-led organisation","Deaf people","Run by deaf people. Works on Indian Sign Language, education and jobs."],
+ ["Sense International India networks","https://www.senseintindia.org/OurNetwork.php","Deafblindness","hearing","National networks","Families, deafblind adults, siblings","Prayaas connects 2,000+ families through 22 parent groups. Udaan is for deafblind adults and Bandhan for siblings."],
+ ["The Indian Stammering Association (TISA)","https://stammer.in/","Stammering","hearing","Self-help groups in most cities, and Zoom","People who stammer, and parents","Free Zoom lounge Tuesday, Thursday and Saturday, 8–9 pm. Also has a parent–child forum."],
+ ["Indian Association of Muscular Dystrophy","https://www.facebook.com/groups/iamdsolan/","Muscular dystrophy","physical","Facebook group (private)","Families and people with MD","India’s oldest MD group, active every week."],
+ ["Limb Girdle Muscular Dystrophy India","https://www.facebook.com/groups/533795430014169/","Limb-girdle muscular dystrophy","physical","Facebook group (private)","Families and people with LGMD","Small and quiet, but the only group for LGMD in India."],
+ ["Cure SMA Foundation of India","https://www.curesmaindia.org/","Spinal muscular atrophy","physical","Family meetings in several cities","Families","Regional family meetings, counselling, and help with assistive devices."],
+ ["The Spinal Foundation","https://www.thespinalfoundation.org/","Spinal cord injury","physical","Self-help group and 24×7 helpline","People with spinal cord injury","Peer networking. Helpline 1800 425 1210."],
+ ["Spina Bifida Foundation India","https://www.facebook.com/spinabifidafoundation.org/","Spina bifida","physical","Facebook page","Families","Mumbai-based. Phone +91 75060 70616."],
+ ["The Little People of India","https://www.facebook.com/littlepeopleindia/","Dwarfism","physical","Community organisation, Mumbai","People with dwarfism and families","Posts occasionally. Email littlepeopleofindia@gmail.com."],
+ ["Thalassemics India and its patient advocacy group (TPAG)","https://www.thalassemicsindia.org/","Thalassemia","blood","Membership organisation, Delhi","Patients and parents","Counselling and transfusion support. Its TPAG group is run by adult patients."],
+ ["Hemophilia Federation (India)","https://hemophilia.in/","Haemophilia","blood","100+ local chapters","Patients and families","Find your local chapter through their WhatsApp helper, linked on the site."],
+ ["Network Alliance of Sickle Cell Organisations (NASCO)","https://www.facebook.com/IndiaScdAlliance/","Sickle cell disease","blood","Alliance of patient and parent groups","Patients and families","Based in Nagpur. Email indiascdalliance@gmail.com."],
+ ["Samman Association","https://epilepsymumbai.org/","Epilepsy","neuro","Monthly meetings in Mumbai hospitals","People with epilepsy and families","Regular meetings with neurologists and psychologists. Latest held September 2026."],
+ ["Epilepsy support groups across India","https://epilepsyindia.org/support-groups/","Epilepsy","neuro","Local groups","People with epilepsy and families","Groups in Pune, Nagpur, Thane, Indore, Thiruvananthapuram and more, with contact numbers."],
+ ["Multiple Sclerosis Society of India","https://www.mssocietyindia.org/","Multiple sclerosis","neuro","9 city chapters","People with MS and carers","Chapter meetings, outings and an annual conference."],
+ ["Parkinson’s Disease and Movement Disorder Society","https://www.parkinsonssocietyindia.com/locate-a-support-center/","Parkinson’s disease","neuro","Support centres in 16 states, and online","People with Parkinson’s and carers","Weekly online exercise sessions in several Indian languages."],
+ ["Schizophrenia Awareness Association","https://schizophrenia.org.in/support-groups-2/self-help-support-groups/","Mental illness","mental","Self-help groups, Pune","People with mental illness and caregivers","Separate peer and caregiver groups that meet at the same time. Call 98348 99383."],
+ ["Swayam Foundation caregiver support","https://swayamfoundation.co.in/support-group/caregiver-support/","Mental illness, intellectual and neurological disabilities","mental","WhatsApp group and monthly online meetups","Caregivers","Founded by a caregiver. Text 98183 31703 to join."],
+ ["Association of People Affected by Leprosy (APAL)","https://apalindia.in/","Leprosy","other","National network, Hyderabad","People affected by leprosy","Run by people affected by leprosy. Works with leprosy colonies across India."],
+ ["Chhanv Foundation","https://www.chhanv.org/","Acid attack survivors","other","Support organisation, Noida","Survivors","Medical, legal and job support. Runs the Sheroes Hangout cafés in Agra and Lucknow."],
+ ["Rising Flame","https://risingflame.org/","All disabilities","other","Programmes and trainings","Women and young people with disabilities","Leadership programmes, peer spaces and campaigns."],
+ ["Rare disease patient groups (ORD India list)","https://ordindia.in/patients/patient-advocacy-groups/","Rare diseases","other","Directory of patient groups","Patients and families","Covers more than 20 rare conditions, including ALS, Rett syndrome, Fragile X and Duchenne."]
 ];
 
 const DIR = [
@@ -998,11 +1016,11 @@ $("#dir-filter").addEventListener("click", e => { const b = e.target.closest("[d
 renderDir();
 
 /* ---------- support groups ---------- */
-const SUP_FILTERS = [["all","All"],["autism","Autism"],["cp","Cerebral palsy"],["blind","Vision"],["md","Muscular dystrophy"],["ld","Learning and intellectual"],["other","Other"]];
+const SUP_FILTERS = [["all","All"],["autism","Autism"],["idd","Down syndrome and intellectual"],["cp","Cerebral palsy"],["vision","Vision"],["hearing","Hearing and speech"],["physical","Physical and neuromuscular"],["blood","Blood disorders"],["neuro","Epilepsy, MS, Parkinson’s"],["mental","Mental health"],["other","Other"]];
 let supF = "all";
 function renderSup(){
   $("#sup-filter").innerHTML = SUP_FILTERS.map(f => `<button type="button" data-f="${f[0]}" aria-pressed="${f[0]===supF}">${esc(f[1])}</button>`).join("");
-  $("#sup").innerHTML = SUPPORT.filter(r => supF==="all" || r[3]===supF).map(r => `<tr><td><a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[0])}</a></td><td>${esc(r[2])}</td><td>${esc(r[5])}</td><td>${esc(r[4])}</td></tr>`).join("");
+  $("#sup").innerHTML = SUPPORT.filter(r => supF==="all" || r[3]===supF).map(r => `<tr><td><a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[0])}</a><p class="sup-note">${esc(r[6])}</p></td><td>${esc(r[2])}</td><td>${esc(r[5])}</td><td>${esc(r[4])}</td></tr>`).join("");
 }
 $("#sup-filter").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if(b){ supF = b.dataset.f; renderSup(); $(`#sup-filter [data-f="${supF}"]`).focus(); } });
 renderSup();
