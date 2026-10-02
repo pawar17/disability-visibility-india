@@ -315,12 +315,13 @@ form.f{display:grid;gap:.6rem}
 .foot .brand{color:#fff}
 .foot .mark{background:#fff}
 
-/* Google Translate widget */
-.goog-te-gadget{font-size:0!important;color:transparent!important}
-.goog-te-gadget .goog-te-combo{font:500 .82rem var(--f-body)!important;margin:0!important;padding:.3rem;border-radius:6px;border:1px solid var(--line)}
-.goog-logo-link,.goog-te-gadget>span{display:none!important}
+/* Google Translate widget: standard dropdown, styled for the black header */
+#gt{display:flex;align-items:center;min-height:2rem}
+#gt .goog-te-gadget{font-size:0!important;color:transparent!important;line-height:1}
+#gt .goog-te-gadget>span,#gt .goog-logo-link{display:none!important}
+#gt .goog-te-combo{font:600 .85rem var(--f-body)!important;margin:0!important;padding:.4rem .5rem;border-radius:6px;border:1px solid #444;background:#fff;color:#000;max-width:10.5rem;cursor:pointer}
+.goog-te-banner-frame,iframe.skiptranslate{display:none!important}
 body{top:0!important}
-.skiptranslate iframe{display:none!important}
 </style>
 </head>
 <body>
@@ -1343,7 +1344,7 @@ async function boot(){
 
 /* ---------- Google Translate (works on your own domain; blocked inside claude.ai previews) ---------- */
 window.googleTranslateElementInit = function(){
-  try{ new google.translate.TranslateElement({ pageLanguage:"en", includedLanguages:"hi,mr,bn,ta,te,kn,ml,gu,pa,ur,or,as,en", layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay:false }, "gt"); }catch(e){}
+  try{ new google.translate.TranslateElement({ pageLanguage:"en", includedLanguages:"hi,mr,bn,ta,te,kn,ml,gu,pa,ur,or,as,en", autoDisplay:false }, "gt"); }catch(e){}
 };
 (function(){
   const s = document.createElement("script");
