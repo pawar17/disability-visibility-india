@@ -184,6 +184,15 @@ th{font-size:.85rem;color:var(--muted);font-weight:650}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .dir{min-width:34rem}
 
+/* support */
+.support-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:2.5rem;align-items:start}
+@media (max-width:860px){.support-top{grid-template-columns:minmax(0,1fr);gap:2rem}}
+.support-now{background:var(--sos-bg);border-radius:var(--r);padding:clamp(1.2rem,3vw,1.6rem);display:grid;gap:.7rem}
+.support-now h2{color:var(--sos-ink);font-size:1.4rem}
+.support-now .big-num{display:block;font-size:2.4rem;font-weight:750;line-height:1;color:var(--sos-ink);font-variant-numeric:tabular-nums;margin-bottom:.3rem}
+.support-tips h2{font-size:1.4rem}
+.support-tips li{font-weight:500}
+
 /* news */
 .news{border-top:1px solid var(--line)}
 .item{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:1.2rem;padding-block:1.3rem;border-bottom:1px solid var(--line)}
@@ -325,6 +334,7 @@ body{top:0!important}
       <a href="#home">Home</a>
       <a href="#learn">Learn</a>
       <a href="#toolkit">Toolkit</a>
+      <a href="#support">Support groups</a>
       <a href="#news">Rulings &amp; news</a>
       <a href="#ideas">Ideas from abroad</a>
       <a href="#give">Give</a>
@@ -451,6 +461,34 @@ body{top:0!important}
       <div class="filters" id="dir-filter" role="group" aria-label="Filter organisations by disability"></div>
       <div class="scroll"><table class="dir"><thead><tr><th scope="col">Organisation</th><th scope="col">Focus</th><th scope="col">Type</th><th scope="col">Where</th></tr></thead><tbody id="dir"></tbody></table></div>
       <p class="muted small" style="margin-top:.6rem">Know an organisation we should add? <a href="#about">Tell me</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section class="view" id="v-support" data-view="support" aria-labelledby="h-support" hidden>
+  <div class="wrap">
+    <div class="page-head"><h1 id="h-support">You don’t have to figure this out alone</h1><p class="lead">Groups where parents, disabled people and carers share what worked for them. Join one for your disability, ask questions, and meet people who’ve been where you are.</p></div>
+    <div class="support-top">
+      <div class="support-now">
+        <h2>Need to talk to someone today?</h2>
+        <p><strong class="big-num">14416</strong> Tele-MANAS, free and confidential mental health support in Indian languages, 24×7. Also 1-800-891-4416.</p>
+        <p>Caring for someone is hard. This line is for carers too.</p>
+      </div>
+      <div class="stack support-tips">
+        <h2>Before you join a group</h2>
+        <ul>
+          <li>Groups share experiences, not medical advice. Check anything important with your doctor or therapist.</li>
+          <li>Keep your child’s full name, school and address out of public posts.</li>
+          <li>Most Facebook groups ask a few questions before letting you in. Answer them so the admins know you’re a parent or carer.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:2.5rem">
+      <h2>Support groups by disability</h2>
+      <div class="filters" id="sup-filter" role="group" aria-label="Filter support groups by disability"></div>
+      <div class="scroll"><table class="dir"><thead><tr><th scope="col">Group</th><th scope="col">For</th><th scope="col">Who it’s for</th><th scope="col">Where it meets</th></tr></thead><tbody id="sup"></tbody></table></div>
+      <p class="muted small" style="margin-top:.8rem">Run a support group, or know one we should list? <a href="#about">Tell me</a> and I’ll add it.</p>
     </div>
   </div>
 </section>
@@ -709,6 +747,31 @@ const STEPS = [
  ["Complain when rights are denied","You don’t need a lawyer to start.",["File with the Chief Commissioner for Persons with Disabilities (ccpd.nic.in) or your State Commissioner","Publicly insulting or humiliating a disabled person is an offence under Section 92","For urgent or large-scale issues, disability rights lawyers can file a writ petition in the High Court"]]
 ];
 
+const SUPPORT = [
+ // [name, link, disability, filter key, where it meets, who it's for]
+ ["Autism India Parent Support Group","https://www.facebook.com/groups/616935402235954/","Autism","autism","Facebook group","Parents"],
+ ["Indian Autism Hub","https://www.facebook.com/groups/584599718218270/","Autism","autism","Facebook group","Parents and autistic adults"],
+ ["Childhood Autism India","https://www.facebook.com/groups/423756421849882/","Autism","autism","Facebook group","Parents"],
+ ["Action For Autism community","https://www.facebook.com/groups/aguha/","Autism","autism","Facebook group","Parents"],
+ ["Autism, Intellectual Disability and ADHD support group","https://www.facebook.com/groups/248896349373160/","Autism, intellectual disability, ADHD","autism","Facebook group","Parents"],
+ ["Humsafar","https://www.facebook.com/groups/Hamsafar.India/","Cerebral palsy","cp","Facebook group","Parents and people with CP"],
+ ["DoST support group for Down syndrome","https://www.facebook.com/groups/861637920534683/","Down syndrome","ld","Facebook group","Parents"],
+ ["Blind and Visually Impaired Tips, Tricks and How-To’s","https://www.facebook.com/groups/784656165003348/","Blindness and low vision","blind","Facebook group","Blind and low-vision people"],
+ ["Blind Stars Beyond Facebook: Bridging the Gap","https://www.facebook.com/groups/blindstar/","Blindness and low vision","blind","Facebook group","Blind and low-vision people"],
+ ["Colour Blindness Awareness","https://www.facebook.com/groups/ColourblindnessAwareness/","Colour blindness","blind","Facebook group","Everyone"],
+ ["Indian Association of Muscular Dystrophy","https://www.facebook.com/groups/iamdsolan/","Muscular dystrophy","md","Facebook group","Families and patients"],
+ ["Limb Girdle Muscular Dystrophy India","https://www.facebook.com/groups/533795430014169/","Muscular dystrophy","md","Facebook group","Families and patients"],
+ ["Spina Bifida Foundation India","https://www.facebook.com/spinabifidafoundation.org/","Spina bifida","other","Facebook page","Families"],
+ ["Uttarakhand Chapter, Spina Bifida Foundation","https://www.facebook.com/Uttarakhand-Chapter-of-Spina-Bifida-FoundationIndia-690463231319284/","Spina bifida","other","Facebook page","Families in Uttarakhand"],
+ ["The Little People of India","https://www.facebook.com/littlepeopleindia/","Dwarfism","other","Facebook page","People with dwarfism and families"],
+ ["Multiple Sclerosis Society of India","https://www.mssocietyindia.org/","Multiple sclerosis","other","Website, local chapters","People with MS and carers"],
+ ["Dyslexia Association of India","https://www.dyslexiaindia.org.in/","Dyslexia","ld","Website","Parents and teachers"],
+ ["Mimaansa","http://mimaansa.org/","Learning disabilities","ld","Website","Parents and students"],
+ ["Sasakawa-India Leprosy Foundation","https://silf.in/","Leprosy","other","Website","People affected by leprosy"],
+ ["Bombay Leprosy Project","https://www.bombayleprosy.org/","Leprosy","other","Website","People affected by leprosy"],
+ ["The Leprosy Mission Trust India","https://www.leprosymission.in/","Leprosy","other","Website","People affected by leprosy"]
+];
+
 const DIR = [
  ["The National Trust","https://www.thenationaltrust.gov.in/","Autism, CP, ID, multiple","Government","National"],
  ["Swavlamban Card (UDID)","https://www.swavlambancard.gov.in/","All disabilities","Government","National"],
@@ -870,7 +933,7 @@ const KIND = {ruling:"Court ruling",policy:"Policy",data:"Data",news:"Report"};
 })();
 
 /* ---------- tabs ---------- */
-const VIEWS = ["home","learn","toolkit","news","ideas","act","give","about","admin"];
+const VIEWS = ["home","learn","toolkit","support","news","ideas","act","give","about","admin"];
 function route(first){
   let v = (location.hash || "#home").slice(1);
   if(v === "contact"){ v = "about"; }
@@ -933,6 +996,16 @@ function renderDir(){
 }
 $("#dir-filter").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if(b){ dirF = b.dataset.f; renderDir(); $(`#dir-filter [data-f="${dirF}"]`).focus(); } });
 renderDir();
+
+/* ---------- support groups ---------- */
+const SUP_FILTERS = [["all","All"],["autism","Autism"],["cp","Cerebral palsy"],["blind","Vision"],["md","Muscular dystrophy"],["ld","Learning and intellectual"],["other","Other"]];
+let supF = "all";
+function renderSup(){
+  $("#sup-filter").innerHTML = SUP_FILTERS.map(f => `<button type="button" data-f="${f[0]}" aria-pressed="${f[0]===supF}">${esc(f[1])}</button>`).join("");
+  $("#sup").innerHTML = SUPPORT.filter(r => supF==="all" || r[3]===supF).map(r => `<tr><td><a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[0])}</a></td><td>${esc(r[2])}</td><td>${esc(r[5])}</td><td>${esc(r[4])}</td></tr>`).join("");
+}
+$("#sup-filter").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if(b){ supF = b.dataset.f; renderSup(); $(`#sup-filter [data-f="${supF}"]`).focus(); } });
+renderSup();
 
 /* ---------- news ---------- */
 let newsF = "all", liveNews = [];
