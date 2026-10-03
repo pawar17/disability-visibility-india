@@ -54,6 +54,9 @@ let schemaReady = false;
 async function ensureSchema(db) {
   if (schemaReady) return;
   await db.batch(SCHEMA.map(s => db.prepare(s)));
+  // Added later: lets the signer's own browser check whether they've confirmed (from any device).
+  try { await db.prepare("ALTER TABLE signatures ADD COLUMN check_hash TEXT").run(); } catch {}
+  try { await db.prepare("CREATE INDEX IF NOT EXISTS sig_check ON signatures(check_hash)").run(); } catch {}
   schemaReady = true;
 }
 
@@ -157,13 +160,13 @@ async function sign(req, env, ctx) {
   if (existing && existing.status === "confirmed") return json({ ok: false, error: "duplicate" }, 409);
   if (existing && existing.created_at > hoursAgo(0.25)) return json({ ok: false, error: "recently_sent" }, 429);
 
-  const t = token(), pub = b.pub === true ? 1 : 0;
+  const t = token(), pub = b.pub === true ? 1 : 0, check = token(), checkHash = await sha256(check);
   if (existing) {
-    await env.DB.prepare("UPDATE signatures SET name=?, city=?, state=?, show_public=?, wants_updates=?, public_name=?, token=?, ip_hash=?, created_at=? WHERE id=?")
-      .bind(name, city, state, pub, b.updates === true ? 1 : 0, pub ? shortName(name) : "", t, ipHash, now(), existing.id).run();
+    await env.DB.prepare("UPDATE signatures SET name=?, city=?, state=?, show_public=?, wants_updates=?, public_name=?, token=?, ip_hash=?, created_at=?, check_hash=? WHERE id=?")
+      .bind(name, city, state, pub, b.updates === true ? 1 : 0, pub ? shortName(name) : "", t, ipHash, now(), checkHash, existing.id).run();
   } else {
-    await env.DB.prepare("INSERT INTO signatures (petition, name, email, city, state, show_public, wants_updates, public_name, status, token, ip_hash, created_at) VALUES (?,?,?,?,?,?,?,?, 'pending', ?,?,?)")
-      .bind(pet, name, email, city, state, pub, b.updates === true ? 1 : 0, pub ? shortName(name) : "", t, ipHash, now()).run();
+    await env.DB.prepare("INSERT INTO signatures (petition, name, email, city, state, show_public, wants_updates, public_name, status, token, ip_hash, created_at, check_hash) VALUES (?,?,?,?,?,?,?,?, 'pending', ?,?,?,?)")
+      .bind(pet, name, email, city, state, pub, b.updates === true ? 1 : 0, pub ? shortName(name) : "", t, ipHash, now(), checkHash).run();
   }
   const link = new URL(req.url).origin + "/confirm?t=" + t;
   try {
@@ -172,7 +175,15 @@ async function sign(req, env, ctx) {
   } catch (e) {
     return json({ ok: false, error: "mail_failed" }, 502);
   }
-  return json({ ok: true, pending: true });
+  return json({ ok: true, pending: true, check });
+}
+
+// Only the browser that signed holds this random value, so nobody can probe other people's emails.
+async function status(req, env) {
+  const c = clean(new URL(req.url).searchParams.get("c"), 64);
+  if (!/^[0-9a-f]{48}$/.test(c)) return json({ ok: false, error: "bad_request" }, 400);
+  const r = await env.DB.prepare("SELECT petition, status FROM signatures WHERE check_hash=?").bind(await sha256(c)).first();
+  return json({ ok: true, found: !!r, confirmed: !!(r && r.status === "confirmed"), petition: r ? r.petition : null });
 }
 
 async function confirm(req, env) {
@@ -362,6 +373,7 @@ export default {
       if (url.pathname === "/summary" && req.method === "GET") res = await summary(env, ctx, req);
       else if (url.pathname === "/sign" && req.method === "POST") res = await sign(req, env, ctx);
       else if (url.pathname === "/contact" && req.method === "POST") res = await contact(req, env, ctx);
+      else if (url.pathname === "/status" && req.method === "GET") res = await status(req, env);
       else if (url.pathname === "/confirm" && req.method === "GET") return await confirm(req, env);
       else if (url.pathname === "/" && req.method === "GET") return Response.redirect("https://disability-visibility.com/", 302);
       else res = json({ ok: false, error: "not_found" }, 404);

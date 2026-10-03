@@ -1146,6 +1146,33 @@ CASES.forEach(c => { const who = c.who; PETS.push({ id:"idea-"+c.id, idea:true, 
   ask:`We ask ${who} to bring this to India: ${IDEA_EXTRA[c.id].sum.charAt(0).toLowerCase() + IDEA_EXTRA[c.id].sum.slice(1)}`,
   why:[c.what, c.india], plan:c.adapt, route:who, deadline:"Rolling. First delivery at 1,000 signatures." }); });
 let petI = 0;
+function pendingFor(pid){
+  const v = store("dvi-pending-"+pid); if(!v) return null;
+  try{ const o = JSON.parse(v); if(o && o.email && o.c) return o; }catch(e){}
+  try{ localStorage.removeItem("dvi-pending-"+pid); }catch(e){} return null; // older format that can't be checked
+}
+/* While a signature waits for email confirmation, check every few seconds, so confirming on a phone updates this laptop too. */
+let pendTimer = null;
+async function checkPending(){
+  if(S.mode!=="api" || document.hidden) return;
+  const ids = PETS.map(p => p.id).filter(id => !signedHere(id) && pendingFor(id) && pendingFor(id).c);
+  if(!ids.length){ clearInterval(pendTimer); pendTimer = null; return; }
+  let changed = false;
+  for(const id of ids){
+    try{ const r = await fetch(CONFIG.API + "/status?c=" + encodeURIComponent(pendingFor(id).c), { cache:"no-store" }); const j = await r.json();
+      if(j.ok && j.confirmed){ store("dvi-signed-"+id, "1"); try{ localStorage.removeItem("dvi-pending-"+id); }catch(e){} changed = true; if(PETS[petI].id===id) S.justSigned = true; }
+      else if(j.ok && !j.found){ try{ localStorage.removeItem("dvi-pending-"+id); }catch(e){} changed = true; }
+    }catch(e){}
+  }
+  if(changed){
+    try{ await loadSheet(); }catch(e){}
+    renderPetList(); renderPetDetail();
+    if(S.justSigned){ S.justSigned = false; const t = $("#pet-form-wrap .thanks"); if(t){ t.scrollIntoView({block:"center", behavior:"smooth"}); t.focus({preventScroll:true}); } }
+  }
+}
+function watchPending(){ if(!pendTimer) pendTimer = setInterval(checkPending, 5000); checkPending(); }
+document.addEventListener("visibilitychange", () => { if(!document.hidden) checkPending(); });
+
 const signedHere = pid => !!(S.mine && S.mine.sigs && S.mine.sigs[pid]) || store("dvi-signed-"+pid)==="1";
 function renderPetList(){
   const {counts} = tallies();
@@ -1172,11 +1199,11 @@ function renderPetDetail(){
         </div>
       </div>
     </article>`;
-  const pend = S.mode==="api" && !signedHere(p.id) ? store("dvi-pending-"+p.id) : null;
+  const pend = S.mode==="api" && !signedHere(p.id) ? pendingFor(p.id) : null;
   $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<div class="thanks" tabindex="-1"><strong>Thank you for signing and making your voice count.</strong><br>Your signature is confirmed. Share this petition so more people can add their names.</div>` : pend ? `
     <div class="pending" tabindex="-1">
       <h3>Check your email to finish signing</h3>
-      <p>We sent a confirmation link to <strong>${esc(pend)}</strong>. Your signature counts once you click it. It can take a minute, and may land in spam or promotions.</p>
+      <p>We sent a confirmation link to <strong>${esc(pend.email)}</strong>. Your signature counts once you click it. It can take a minute, and may land in spam or promotions.</p>
       <button type="button" class="btn" id="pend-reset">Sign with a different email</button>
     </div>` : `
     <form class="f" id="sign-form" novalidate>
@@ -1263,12 +1290,13 @@ async function sign(pid){
       const t = $(".thanks"); if(t){ t.setAttribute("tabindex","-1"); t.focus(); }
     } else if(S.mode==="api"){
       const turnstile = tsToken("sf-ts"); if(!turnstile) throw { code:"bot_check" };
-      try{ await post("/sign", { petition: pid, name, email, city, state, pub, updates, turnstile }); } finally { tsReset("sf-ts"); }
-      store("dvi-pending-"+pid, email); renderPetDetail();
+      let res; try{ res = await post("/sign", { petition: pid, name, email, city, state, pub, updates, turnstile }); } finally { tsReset("sf-ts"); }
+      store("dvi-pending-"+pid, JSON.stringify({ email, c: res.check || "" })); renderPetDetail(); watchPending();
       const pd = $("#pet-form-wrap .pending"); if(pd) pd.focus();
     } else throw { code:"offline" };
   }catch(e){
     const c = e && e.code;
+    if(c==="duplicate" && S.mode==="api"){ store("dvi-signed-"+pid, "1"); try{ localStorage.removeItem("dvi-pending-"+pid); }catch(_){} renderPetList(); renderPetDetail(); return; }
     setStatus(st, API_ERR[c] ? API_ERR[c] : c==="invalid_argument" ? "This page is view-only for you, so your signature couldn’t be saved. Ask the owner for Contributor access." : c==="offline" ? "Signing isn’t switched on for this copy of the site yet." : "Something went wrong. Please check your connection and try again.", "bad");
   }finally{ btn.disabled = false; }
 }
@@ -1394,7 +1422,7 @@ async function boot(){
     try{ const q = new URLSearchParams(location.search), sp = q.get("signed");
       if(sp && PETS.some(p => p.id===sp)){ store("dvi-signed-"+sp, "1"); try{ localStorage.removeItem("dvi-pending-"+sp); }catch(e){} petI = PETS.findIndex(p => p.id===sp); renderPetList();
         q.delete("signed"); history.replaceState(null, "", location.pathname + (q.toString() ? "?"+q : "") + location.hash); S.justSigned = true; } }catch(e){}
-    renderPetDetail(); mountTurnstile("ct-ts");
+    renderPetDetail(); mountTurnstile("ct-ts"); watchPending();
     if(S.justSigned){ setTimeout(() => { const t = $("#pet-form-wrap .thanks"); if(t){ t.scrollIntoView({block:"center"}); t.focus({preventScroll:true}); } }, 300); }
     try{ await loadSheet(); }catch(e){ setStatus($("#backend-note"), "Live counts couldn’t load just now. You can still sign.", ""); }
   } else {
