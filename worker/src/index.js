@@ -251,7 +251,7 @@ async function sessionEmail(req, env) {
   if (!row || row.expires_at < now()) return null;
   return adminList(env).includes(row.email) ? row.email : null;
 }
-const LOGIN_CSP = { "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" };
+const LOGIN_CSP = { "Referrer-Policy": "same-origin", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" };
 function loginPage(msg) {
   return html(page("Admin sign-in", `<h1>Admin sign-in</h1>${msg ? `<p>${esc(msg)}</p>` : ""}
 <form method="post" action="/login" style="display:grid;gap:.6rem;margin-top:1rem">
@@ -260,7 +260,12 @@ function loginPage(msg) {
 <button style="font:inherit;font-weight:600;padding:.65rem 1rem;border:0;border-radius:6px;background:#F2C10A;cursor:pointer;justify-self:start">Email me a sign-in link</button>
 </form>`), 200, LOGIN_CSP);
 }
-const sameOrigin = (req, url) => req.headers.get("Origin") === url.origin;
+// Browsers send "Origin: null" for form posts from no-referrer pages, so also accept Sec-Fetch-Site.
+const sameOrigin = (req, url) => {
+  const o = req.headers.get("Origin"), sfs = req.headers.get("Sec-Fetch-Site");
+  if (o && o !== "null") return o === url.origin;
+  return sfs === "same-origin";
+};
 
 async function adminAuth(req, env, url) {
   const p = url.pathname;
@@ -316,7 +321,7 @@ async function admin(req, env, url) {
   const p = url.pathname;
   if (!who) return p === "/" ? loginPage("") : json({ ok: false, error: "signed_out" }, 401);
   if (p === "/" && req.method === "GET") return html(ADMIN_PAGE.replace("{{WHO}}", esc(who)), 200, {
-    "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" });
+    "Referrer-Policy": "same-origin", "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" });
   if (p === "/api/data" && req.method === "GET") {
     const sigs = await env.DB.prepare("SELECT id, petition, name, email, city, state, show_public, wants_updates, status, created_at, confirmed_at FROM signatures ORDER BY created_at DESC").all();
     const msgs = await env.DB.prepare("SELECT id, name, email, writing_as, message, created_at FROM messages ORDER BY created_at DESC").all();
@@ -333,7 +338,7 @@ async function admin(req, env, url) {
     return new Response(body, { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="dvi-${type}-${now().slice(0, 10)}.csv"`, "Cache-Control": "no-store", ...SEC } });
   }
   if (p === "/api/delete" && req.method === "POST") {
-    if (req.headers.get("Origin") !== url.origin) return json({ ok: false }, 403);
+    if (!sameOrigin(req, url)) return json({ ok: false }, 403);
     const b = await readJson(req); const id = Number(b && b.id);
     const table = b && b.type === "messages" ? "messages" : "signatures";
     if (!Number.isInteger(id)) return json({ ok: false }, 400);
