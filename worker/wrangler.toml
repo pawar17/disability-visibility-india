@@ -1,0 +1,24 @@
+name = "dvi-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+# Dashboard-set variables (ADMIN_EMAILS, NOTIFY_EMAIL, ACCESS_TEAM, ACCESS_AUD) and secrets survive deploys.
+keep_vars = true
+
+routes = [
+  { pattern = "api.disability-visibility.com", custom_domain = true },
+  { pattern = "admin.disability-visibility.com", custom_domain = true }
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dvi"
+database_id = "REPLACE_WITH_D1_ID"
+
+[vars]
+SITE_ORIGINS = "https://disability-visibility.com,https://www.disability-visibility.com,https://pawar17.github.io"
+ADMIN_HOST = "admin.disability-visibility.com"
+MAIL_FROM = "Disability Visibility India <petitions@disability-visibility.com>"
+
+[observability]
+enabled = true
