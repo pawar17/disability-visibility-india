@@ -15,7 +15,7 @@
  *   POST /api/delete     remove a signature or message
  *
  * Secrets (set in the Cloudflare dashboard, never in code):
- *   TURNSTILE_SECRET, RESEND_API_KEY, IP_SALT
+ *   TURNSTILE_SECRET, RESEND_API_KEY (IP_SALT optional; defaults to the Turnstile secret)
  * Vars (wrangler.toml): SITE_ORIGINS, ACCESS_TEAM, ACCESS_AUD, ADMIN_EMAILS, MAIL_FROM, NOTIFY_EMAIL
  */
 
@@ -146,7 +146,7 @@ async function sign(req, env, ctx) {
   if (!PETITIONS.includes(pet) || name.length < 2 || !city || !STATES.includes(state) || !validEmail(email)) return json({ ok: false, error: "bad_request" }, 400);
   const ip = req.headers.get("CF-Connecting-IP") || "";
   if (!(await turnstileOk(env, b.turnstile, ip))) return json({ ok: false, error: "bot_check" }, 403);
-  const ipHash = await sha256((env.IP_SALT || "") + ip);
+  const ipHash = await sha256((env.IP_SALT || env.TURNSTILE_SECRET || "") + ip);
   const recentFromIp = await env.DB.prepare("SELECT COUNT(*) n FROM signatures WHERE ip_hash=? AND created_at>?").bind(ipHash, hoursAgo(1)).first("n");
   if (recentFromIp >= 15) return json({ ok: false, error: "rate_limited" }, 429);
 
@@ -190,7 +190,7 @@ async function contact(req, env, ctx) {
   if (!name || !text || !validEmail(email) || !WHY.includes(why)) return json({ ok: false, error: "bad_request" }, 400);
   const ip = req.headers.get("CF-Connecting-IP") || "";
   if (!(await turnstileOk(env, b.turnstile, ip))) return json({ ok: false, error: "bot_check" }, 403);
-  const ipHash = await sha256((env.IP_SALT || "") + ip);
+  const ipHash = await sha256((env.IP_SALT || env.TURNSTILE_SECRET || "") + ip);
   const byEmail = await env.DB.prepare("SELECT COUNT(*) n FROM messages WHERE email=? AND created_at>?").bind(email, hoursAgo(24)).first("n");
   const byIp = await env.DB.prepare("SELECT COUNT(*) n FROM messages WHERE ip_hash=? AND created_at>?").bind(ipHash, hoursAgo(24)).first("n");
   if (byEmail >= 3 || byIp >= 10) return json({ ok: false, error: "rate_limited" }, 429);

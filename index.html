@@ -333,6 +333,7 @@ form.f{display:grid;gap:.6rem}
 #gt .goog-te-combo:hover,.tools button:hover{border-color:#888}
 .goog-te-banner-frame,iframe.skiptranslate{display:none!important}
 body{top:0!important}
+.ts:empty{display:none}.ts{min-height:65px}
 </style>
 </head>
 <body>
@@ -605,9 +606,10 @@ body{top:0!important}
             <label for="ct-name">Your name<input id="ct-name" type="text" maxlength="80" autocomplete="name"></label>
             <label for="ct-email">Email<input id="ct-email" type="email" maxlength="120" autocomplete="email"></label>
           </div>
-          <label for="ct-why">I’m writing as<select id="ct-why"><option>A parent or family member</option><option>A disabled person</option><option>A teacher or therapist</option><option>A lawyer or researcher</option><option>A journalist</option><option>An organisation or company</option><option>Someone who wants to volunteer</option><option>Something else</option></select></label>
+          <label for="ct-why">I’m writing as<select id="ct-why"><option>A parent or family member</option><option>A disabled person</option><option>A teacher or therapist</option><option>A lawyer or researcher</option><option>A journalist</option><option>An organisation or company</option><option>Someone who wants to volunteer</option><option>Suggesting an organisation or support group</option><option>Suggesting a petition</option><option>Feedback on the site</option><option>Something else</option></select></label>
           <label for="ct-msg">Message<textarea id="ct-msg" rows="6" maxlength="3000"></textarea></label>
           <div class="hp" aria-hidden="true"><label for="ct-web">Leave this empty<input id="ct-web" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <div class="ts" id="ct-ts"></div>
           <div><button class="btn" type="submit">Send message</button></div>
           <p class="status" id="ct-status" role="status"></p>
         </form>
@@ -647,8 +649,10 @@ body{top:0!important}
 "use strict";
 /* ---------- SETTINGS for the copy on your own domain ---------- */
 const CONFIG = {
-  // Paste your Google Apps Script web-app URL here (see apps-script/Code.gs).
-  SHEETS_ENDPOINT: ""
+  // Petitions and contact backend (Cloudflare Worker, see /worker in the repo)
+  API: "https://api.disability-visibility.com",
+  // Cloudflare Turnstile site key (public, safe to publish)
+  TURNSTILE_SITEKEY: "0x4AAAAAAFM6pJLa8H9_Fb9G"
 };
 /* ---------- CONTENT ---------- */
 const DIS21 = ["Blindness","Low vision","Leprosy cured persons","Hearing impairment (deaf and hard of hearing)","Locomotor disability","Dwarfism","Intellectual disability","Mental illness","Autism spectrum disorder","Cerebral palsy","Muscular dystrophy","Chronic neurological conditions","Specific learning disabilities","Multiple sclerosis","Speech and language disability","Thalassemia","Haemophilia","Sickle cell disease","Multiple disabilities, including deaf-blindness","Acid attack victims","Parkinson’s disease"];
@@ -1130,7 +1134,7 @@ const S = { mode:"none", db:null, uid:null, owner:false, signerDocs:[], mine:nul
 
 function tallies(){
   const by = {}, counts = {}; PETS.forEach(p => { by[p.id] = []; counts[p.id] = 0; });
-  if(S.mode==="sheets" && S.sheet){ PETS.forEach(p => { by[p.id] = (S.sheet.recent||{})[p.id] || []; counts[p.id] = (S.sheet.counts||{})[p.id] || 0; }); return {by, counts}; }
+  if(S.mode==="api" && S.sheet){ PETS.forEach(p => { by[p.id] = (S.sheet.recent||{})[p.id] || []; counts[p.id] = (S.sheet.counts||{})[p.id] || 0; }); return {by, counts}; }
   S.signerDocs.forEach(d => { const sg = d.sigs || {}; Object.keys(sg).forEach(pid => { if(!by[pid]) return; counts[pid]++; by[pid].push(sg[pid]); }); });
   PETS.forEach(p => by[p.id].sort((a,b) => String(b.at).localeCompare(String(a.at))));
   return {by, counts};
@@ -1179,11 +1183,12 @@ function renderPetDetail(){
       <label class="check"><input type="checkbox" id="sf-pub" checked>Show my first name, last initial and city on this page</label>
       <label class="check"><input type="checkbox" id="sf-upd">Email me when this petition is delivered</label>
       <label class="check"><input type="checkbox" id="sf-ok">I support this petition and these are my real details</label>
+      <div class="ts" id="sf-ts"></div>
       <div><button class="btn yellow" type="submit">Sign this petition</button></div>
       <p class="status" id="sf-status" role="status"></p>
-      <p class="small muted">Your email is never shown publicly or shared.${S.mode==="sheets" ? " We’ll email you a link to confirm your signature." : ""}</p>
+      <p class="small muted">Your email is never shown publicly or shared.${S.mode==="api" ? " We’ll email you a link to confirm your signature." : ""}</p>
     </form>`;
-  const f = $("#sign-form"); if(f) f.addEventListener("submit", e => { e.preventDefault(); sign(p.id); });
+  const f = $("#sign-form"); if(f){ f.addEventListener("submit", e => { e.preventDefault(); sign(p.id); }); mountTurnstile("sf-ts"); }
   updatePetNumbers();
 }
 function updatePetNumbers(){
@@ -1198,10 +1203,37 @@ function updatePetNumbers(){
 $("#pet-list").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if(b){ petI = +b.dataset.i; renderPetList(); renderPetDetail(); $(`#pet-list [data-i="${petI}"]`).focus(); } });
 renderPetList(); renderPetDetail();
 
-async function post(payload){
-  const r = await fetch(CONFIG.SHEETS_ENDPOINT, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-  const j = await r.json(); if(!j.ok) throw { code: j.error || "server" }; return j;
+async function post(path, payload){
+  let r; try{ r = await fetch(CONFIG.API + path, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(payload) }); }catch(e){ throw { code:"network" }; }
+  const j = await r.json().catch(() => ({})); if(!j.ok) throw { code: j.error || "server" }; return j;
 }
+
+/* ---------- Cloudflare Turnstile (bot check) ---------- */
+const TS = {};
+function loadTurnstile(){
+  if(!CONFIG.TURNSTILE_SITEKEY || window.__tsLoading) return; window.__tsLoading = true;
+  window.onTurnstileLoad = () => Object.keys(TS).forEach(id => { if(TS[id] === null) mountTurnstile(id); });
+  const s = document.createElement("script"); s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad"; s.async = true; s.defer = true; document.head.appendChild(s);
+}
+function mountTurnstile(id){
+  if(S.mode !== "api" || !CONFIG.TURNSTILE_SITEKEY) return;
+  const el = document.getElementById(id); if(!el) return;
+  if(!window.turnstile){ TS[id] = null; loadTurnstile(); return; }
+  if(TS[id] != null){ try{ window.turnstile.remove(TS[id]); }catch(e){} }
+  TS[id] = window.turnstile.render(el, { sitekey: CONFIG.TURNSTILE_SITEKEY, size: "flexible", theme: "light", language: "auto" });
+}
+function tsToken(id){ try{ return window.turnstile && TS[id] != null ? window.turnstile.getResponse(TS[id]) || "" : ""; }catch(e){ return ""; } }
+function tsReset(id){ try{ if(window.turnstile && TS[id] != null) window.turnstile.reset(TS[id]); }catch(e){} }
+const API_ERR = {
+  duplicate: "This email has already signed this petition.",
+  recently_sent: "We just sent a confirmation email to this address. Please check your inbox and spam folder.",
+  bot_check: "Please complete the quick check above the button, then try again.",
+  rate_limited: "Too many tries from this connection. Please wait a little and try again.",
+  not_ready: "Signing opens very soon. Please check back in a day.",
+  mail_failed: "We couldn’t send the confirmation email. Please check the address and try again.",
+  bad_request: "Please check your details and try again.",
+  network: "Couldn’t reach the server. Please check your connection and try again."
+};
 
 async function sign(pid){
   const st = $("#sf-status");
@@ -1221,14 +1253,14 @@ async function sign(pid){
       await ref.set({ name, email, city, state, updates: updates || !!old.updates, petitions: Array.from(new Set([...(old.petitions||[]), pid])), firstAt: old.firstAt || at, lastAt: at });
       store("dvi-signed-"+pid, "1"); renderPetList(); renderPetDetail();
       const t = $(".thanks"); if(t){ t.setAttribute("tabindex","-1"); t.focus(); }
-    } else if(S.mode==="sheets"){
-      await post({ action:"sign", petition: pid, name, email, city, state, pub, updates });
-      setStatus(st, "Almost done. Check your email and click the link to confirm your signature.", "ok");
-      store("dvi-signed-"+pid, "1");
+    } else if(S.mode==="api"){
+      const turnstile = tsToken("sf-ts"); if(!turnstile) throw { code:"bot_check" };
+      try{ await post("/sign", { petition: pid, name, email, city, state, pub, updates, turnstile }); } finally { tsReset("sf-ts"); }
+      setStatus(st, "Almost done. Check your email and click the link to confirm your signature. It can take a minute, and may land in spam.", "ok");
     } else throw { code:"offline" };
   }catch(e){
     const c = e && e.code;
-    setStatus(st, c==="invalid_argument" ? "This page is view-only for you, so your signature couldn’t be saved. Ask the owner for Contributor access." : c==="duplicate" ? "This email has already signed this petition." : c==="offline" ? "Signing isn’t switched on for this copy of the site yet." : "Something went wrong. Please check your connection and try again.", "bad");
+    setStatus(st, API_ERR[c] ? API_ERR[c] : c==="invalid_argument" ? "This page is view-only for you, so your signature couldn’t be saved. Ask the owner for Contributor access." : c==="offline" ? "Signing isn’t switched on for this copy of the site yet." : "Something went wrong. Please check your connection and try again.", "bad");
   }finally{ btn.disabled = false; }
 }
 
@@ -1252,10 +1284,13 @@ $("#contact-form").addEventListener("submit", async e => {
       const ref = S.db.doc("messages/" + S.uid); const old = await ref.get().then(s => s.exists ? s.data() : {}).catch(() => ({}));
       const history = (old.history || []).slice(-19); history.push({ why, text: msg.slice(0,3000), at });
       await ref.set({ name, email, history, lastAt: at });
-    } else if(S.mode==="sheets") await post({ action:"contact", name, email, why, message: msg });
+    } else if(S.mode==="api"){
+      const turnstile = tsToken("ct-ts"); if(!turnstile) throw { code:"bot_check" };
+      try{ await post("/contact", { name, email, why, message: msg, turnstile }); } finally { tsReset("ct-ts"); }
+    }
     else throw {code:"offline"};
     setStatus(st, "Sent. Thank you for writing. I’ll reply by email.", "ok"); e.target.reset();
-  }catch(err){ setStatus(st, err.code==="invalid_argument" ? "This page is view-only for you, so the message couldn’t be sent. Please reach me on Instagram or LinkedIn." : err.code==="offline" ? "The form isn’t switched on for this copy of the site yet. Please reach me on Instagram or LinkedIn." : "Couldn’t send. Please try again.", "bad"); }
+  }catch(err){ setStatus(st, API_ERR[err.code] && err.code!=="duplicate" && err.code!=="recently_sent" ? API_ERR[err.code] : err.code==="invalid_argument" ? "This page is view-only for you, so the message couldn’t be sent. Please reach me on Instagram or LinkedIn." : err.code==="offline" ? "The form isn’t switched on for this copy of the site yet. Please reach me on Instagram or LinkedIn." : "Couldn’t send. Please try again.", "bad"); }
   finally{ btn.disabled = false; }
 });
 
@@ -1319,7 +1354,7 @@ $("#adm-export").addEventListener("click", async () => {
 }
 
 /* ---------- backends ---------- */
-async function loadSheet(){ const r = await fetch(CONFIG.SHEETS_ENDPOINT + "?action=summary"); S.sheet = await r.json(); renderPetList(); updatePetNumbers(); renderFund(); }
+async function loadSheet(){ const r = await fetch(CONFIG.API + "/summary"); const j = await r.json(); if(!j.ok) throw new Error("summary"); S.sheet = j; renderPetList(); updatePetNumbers(); }
 function refreshPet(){ renderPetList(); updatePetNumbers(); }
 
 async function boot(){
@@ -1345,8 +1380,8 @@ async function boot(){
       db.collection("messages").onSnapshot(snap => { S.messages = snap.docs.map(d => d.data() || {}); renderAdmin(); }, () => {});
       if(location.hash === "#admin") route(true);
     }
-  } else if(CONFIG.SHEETS_ENDPOINT){
-    S.mode = "sheets"; renderPetDetail();
+  } else if(CONFIG.API){
+    S.mode = "api"; renderPetDetail(); mountTurnstile("ct-ts");
     try{ await loadSheet(); }catch(e){ setStatus($("#backend-note"), "Live counts couldn’t load just now. You can still sign.", ""); }
   } else {
     setStatus($("#backend-note"), "Signing opens soon on this copy of the site.", "");
