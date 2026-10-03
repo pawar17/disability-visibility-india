@@ -8,7 +8,7 @@
  *   GET  /confirm?t=…    confirm a signature
  *   POST /contact        contact form message
  *
- * Private host admin.disability-visibility.com (behind Cloudflare Access)
+ * Private host admin.disability-visibility.com (email sign-in link for ADMIN_EMAILS; Cloudflare Access also accepted)
  *   GET  /               admin page
  *   GET  /api/data       all signatures and messages
  *   GET  /api/export?type=signatures|messages   CSV download
@@ -45,6 +45,9 @@ const SCHEMA = [
      name TEXT NOT NULL, email TEXT NOT NULL, writing_as TEXT NOT NULL, message TEXT NOT NULL,
      ip_hash TEXT, created_at TEXT NOT NULL)`,
   `CREATE INDEX IF NOT EXISTS msg_email ON messages(email, created_at)`,
+  `CREATE TABLE IF NOT EXISTS admin_links (token_hash TEXT PRIMARY KEY, email TEXT NOT NULL, expires_at TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0)`,
+  `CREATE TABLE IF NOT EXISTS admin_sessions (id_hash TEXT PRIMARY KEY, email TEXT NOT NULL, expires_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS admin_login_attempts (ip_hash TEXT NOT NULL, at TEXT NOT NULL)`,
 ];
 const CACHE_KEY = "https://api.disability-visibility.com/__cache/summary";
 let schemaReady = false;
@@ -232,12 +235,87 @@ async function accessEmail(req, env) {
 
 const csvCell = v => { let s = String(v == null ? "" : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
 
-async function admin(req, env, url) {
-  const who = await accessEmail(req, env);
-  if (!who) return html(page("Not allowed", "<h1>Not allowed</h1><p>This page is private.</p>"), 403);
+/* Email sign-in: a one-time link sent only to addresses in ADMIN_EMAILS. */
+const SESSION_COOKIE = "__Host-dvi_admin";
+const adminList = env => String(env.ADMIN_EMAILS || "").toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
+function cookie(req, name) {
+  const c = req.headers.get("Cookie") || "";
+  for (const part of c.split(/;\s*/)) { const i = part.indexOf("="); if (i > 0 && part.slice(0, i) === name) return part.slice(i + 1); }
+  return "";
+}
+async function sessionEmail(req, env) {
+  const id = cookie(req, SESSION_COOKIE);
+  if (!/^[0-9a-f]{64}$/.test(id)) return null;
+  const row = await env.DB.prepare("SELECT email, expires_at FROM admin_sessions WHERE id_hash=?").bind(await sha256(id)).first();
+  if (!row || row.expires_at < now()) return null;
+  return adminList(env).includes(row.email) ? row.email : null;
+}
+const LOGIN_CSP = { "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" };
+function loginPage(msg) {
+  return html(page("Admin sign-in", `<h1>Admin sign-in</h1>${msg ? `<p>${esc(msg)}</p>` : ""}
+<form method="post" action="/login" style="display:grid;gap:.6rem;margin-top:1rem">
+<label for="e" style="font-weight:600">Email</label>
+<input id="e" name="email" type="email" required autocomplete="email" style="font:inherit;padding:.6rem .7rem;border:1px solid #bbb;border-radius:6px">
+<button style="font:inherit;font-weight:600;padding:.65rem 1rem;border:0;border-radius:6px;background:#F2C10A;cursor:pointer;justify-self:start">Email me a sign-in link</button>
+</form>`), 200, LOGIN_CSP);
+}
+const sameOrigin = (req, url) => req.headers.get("Origin") === url.origin;
+
+async function adminAuth(req, env, url) {
   const p = url.pathname;
+  if (p === "/login" && req.method === "POST") {
+    if (!sameOrigin(req, url)) return html(page("Not allowed", "<h1>Not allowed</h1>"), 403);
+    const ipHash = await sha256((env.IP_SALT || env.TURNSTILE_SECRET || "") + (req.headers.get("CF-Connecting-IP") || ""));
+    const tries = await env.DB.prepare("SELECT COUNT(*) n FROM admin_login_attempts WHERE ip_hash=? AND at>?").bind(ipHash, hoursAgo(1)).first("n");
+    if (tries >= 5) return loginPage("Too many attempts. Please wait an hour and try again.");
+    await env.DB.prepare("INSERT INTO admin_login_attempts (ip_hash, at) VALUES (?,?)").bind(ipHash, now()).run();
+    const fd = await req.formData().catch(() => null);
+    const email = clean(fd && fd.get("email"), 120).toLowerCase();
+    if (adminList(env).includes(email) && env.RESEND_API_KEY) {
+      const t = token() + token().slice(0, 16);
+      await env.DB.prepare("INSERT INTO admin_links (token_hash, email, expires_at) VALUES (?,?,?)").bind(await sha256(t), email, new Date(Date.now() + 10 * 60e3).toISOString()).run();
+      try { await sendMail(env, email, "Your admin sign-in link", `Open this link within 10 minutes to sign in to the Disability Visibility India admin page:\n${url.origin}/auth?t=${t}\n\nIf you didn't ask for this, ignore this email.`); } catch {}
+    }
+    return html(page("Check your email", "<h1>Check your email</h1><p>If that address is allowed, a sign-in link is on its way. It works once and expires in 10 minutes.</p>"), 200, LOGIN_CSP);
+  }
+  if (p === "/auth" && req.method === "GET") {
+    // A button step, so email scanners that open links can't use them up.
+    const t = clean(url.searchParams.get("t"), 80);
+    return html(page("Admin sign-in", `<h1>Sign in</h1><form method="post" action="/auth"><input type="hidden" name="t" value="${esc(t)}"><button style="font:inherit;font-weight:600;padding:.65rem 1rem;border:0;border-radius:6px;background:#F2C10A;cursor:pointer">Sign in to the admin page</button></form>`), 200, LOGIN_CSP);
+  }
+  if (p === "/auth" && req.method === "POST") {
+    if (!sameOrigin(req, url)) return html(page("Not allowed", "<h1>Not allowed</h1>"), 403);
+    const fd = await req.formData().catch(() => null);
+    const t = clean(fd && fd.get("t"), 80);
+    const h = await sha256(t);
+    const r = await env.DB.prepare("UPDATE admin_links SET used=1 WHERE token_hash=? AND used=0 AND expires_at>? RETURNING email").bind(h, now()).first();
+    if (!r || !adminList(env).includes(r.email)) return loginPage("That link has expired or was already used. Request a new one.");
+    const id = token() + token().slice(0, 16);
+    await env.DB.batch([
+      env.DB.prepare("DELETE FROM admin_sessions WHERE expires_at<?").bind(now()),
+      env.DB.prepare("DELETE FROM admin_links WHERE expires_at<?").bind(now()),
+      env.DB.prepare("DELETE FROM admin_login_attempts WHERE at<?").bind(hoursAgo(24)),
+      env.DB.prepare("INSERT INTO admin_sessions (id_hash, email, expires_at) VALUES (?,?,?)").bind(await sha256(id), r.email, new Date(Date.now() + 12 * 3600e3).toISOString()),
+    ]);
+    return new Response(null, { status: 303, headers: { Location: "/", "Set-Cookie": `${SESSION_COOKIE}=${id}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=43200`, ...SEC } });
+  }
+  if (p === "/logout" && req.method === "POST") {
+    if (!sameOrigin(req, url)) return html(page("Not allowed", "<h1>Not allowed</h1>"), 403);
+    const id = cookie(req, SESSION_COOKIE);
+    if (id) await env.DB.prepare("DELETE FROM admin_sessions WHERE id_hash=?").bind(await sha256(id)).run();
+    return new Response(null, { status: 303, headers: { Location: "/", "Set-Cookie": `${SESSION_COOKIE}=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0`, ...SEC } });
+  }
+  return null;
+}
+
+async function admin(req, env, url) {
+  const authRes = await adminAuth(req, env, url);
+  if (authRes) return authRes;
+  const who = (await sessionEmail(req, env)) || (await accessEmail(req, env));
+  const p = url.pathname;
+  if (!who) return p === "/" ? loginPage("") : json({ ok: false, error: "signed_out" }, 401);
   if (p === "/" && req.method === "GET") return html(ADMIN_PAGE.replace("{{WHO}}", esc(who)), 200, {
-    "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" });
+    "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" });
   if (p === "/api/data" && req.method === "GET") {
     const sigs = await env.DB.prepare("SELECT id, petition, name, email, city, state, show_public, wants_updates, status, created_at, confirmed_at FROM signatures ORDER BY created_at DESC").all();
     const msgs = await env.DB.prepare("SELECT id, name, email, writing_as, message, created_at FROM messages ORDER BY created_at DESC").all();
@@ -319,7 +397,7 @@ th{background:#f3f2ec;font-weight:600;white-space:nowrap}td.msg{white-space:pre-
 .pending{color:#8A1C14;font-weight:600}.del{height:1.8rem;font-size:.8rem;color:#8A1C14;border-color:#e2c3bf}
 .muted{color:#666}
 </style></head><body>
-<header><b>Disability Visibility India · Admin</b><span>Signed in as {{WHO}}</span></header>
+<header><b>Disability Visibility India · Admin</b><span>Signed in as {{WHO}} <form method="post" action="/logout" style="display:inline"><button style="height:1.8rem;margin-left:.5rem;background:#111;color:#fff;border-color:#444">Sign out</button></form></span></header>
 <main>
 <h2>Confirmed signatures</h2><div class="counts" id="counts"></div>
 <h2>Signatures</h2>
@@ -335,7 +413,7 @@ th{background:#f3f2ec;font-weight:600;white-space:nowrap}td.msg{white-space:pre-
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let D={signatures:[],messages:[]};
-async function load(){const r=await fetch("/api/data");D=await r.json();
+async function load(){const r=await fetch("/api/data");if(r.status===401){location.reload();return;}D=await r.json();
  const pets=[...new Set(D.signatures.map(s=>s.petition))].sort();
  const fp=$("#fp"),cur=fp.value;fp.innerHTML='<option value="">All petitions</option>'+pets.map(p=>'<option>'+esc(p)+'</option>').join("");fp.value=cur;draw();}
 function draw(){
