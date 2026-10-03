@@ -333,6 +333,7 @@ form.f{display:grid;gap:.6rem}
 #gt .goog-te-combo:hover,.tools button:hover{border-color:#888}
 .goog-te-banner-frame,iframe.skiptranslate{display:none!important}
 body{top:0!important}
+#pet-form-wrap .pending{background:#FDF3CF;border-radius:8px;padding:1rem 1.1rem}#pet-form-wrap .pending h3{margin:0 0 .4rem;font-size:1.15rem}#pet-form-wrap .pending p{margin:0 0 .8rem}#pet-form-wrap .pending:focus{outline:3px solid #000;outline-offset:2px}
 .ts:empty{display:none}.ts{min-height:65px}
 </style>
 </head>
@@ -1171,7 +1172,13 @@ function renderPetDetail(){
         </div>
       </div>
     </article>`;
-  $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<p class="thanks">You’ve signed this petition. Thank you.</p>` : `
+  const pend = S.mode==="api" && !signedHere(p.id) ? store("dvi-pending-"+p.id) : null;
+  $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<p class="thanks">You’ve signed this petition. Thank you.</p>` : pend ? `
+    <div class="pending" tabindex="-1">
+      <h3>Check your email to finish signing</h3>
+      <p>We sent a confirmation link to <strong>${esc(pend)}</strong>. Your signature counts once you click it. It can take a minute, and may land in spam or promotions.</p>
+      <button type="button" class="btn" id="pend-reset">Sign with a different email</button>
+    </div>` : `
     <form class="f" id="sign-form" novalidate>
       <label for="sf-name">Full name<input id="sf-name" type="text" maxlength="80" autocomplete="name"></label>
       <label for="sf-email">Email<input id="sf-email" type="email" maxlength="120" autocomplete="email"></label>
@@ -1188,6 +1195,7 @@ function renderPetDetail(){
       <p class="status" id="sf-status" role="status"></p>
       <p class="small muted">Your email is never shown publicly or shared.${S.mode==="api" ? " We’ll email you a link to confirm your signature." : ""}</p>
     </form>`;
+  const pr = $("#pend-reset"); if(pr) pr.addEventListener("click", () => { try{ localStorage.removeItem("dvi-pending-"+p.id); }catch(e){} renderPetDetail(); const n = $("#sf-name"); if(n) n.focus(); });
   const f = $("#sign-form"); if(f){ f.addEventListener("submit", e => { e.preventDefault(); sign(p.id); }); mountTurnstile("sf-ts"); }
   updatePetNumbers();
 }
@@ -1226,7 +1234,7 @@ function tsToken(id){ try{ return window.turnstile && TS[id] != null ? window.tu
 function tsReset(id){ try{ if(window.turnstile && TS[id] != null) window.turnstile.reset(TS[id]); }catch(e){} }
 const API_ERR = {
   duplicate: "This email has already signed this petition.",
-  recently_sent: "We just sent a confirmation email to this address. Please check your inbox and spam folder.",
+  recently_sent: "We already sent a confirmation email to this address a few minutes ago. Please check your inbox, spam and promotions folders.",
   bot_check: "Please complete the quick check above the button, then try again.",
   rate_limited: "Too many tries from this connection. Please wait a little and try again.",
   not_ready: "Signing opens very soon. Please check back in a day.",
@@ -1256,7 +1264,8 @@ async function sign(pid){
     } else if(S.mode==="api"){
       const turnstile = tsToken("sf-ts"); if(!turnstile) throw { code:"bot_check" };
       try{ await post("/sign", { petition: pid, name, email, city, state, pub, updates, turnstile }); } finally { tsReset("sf-ts"); }
-      setStatus(st, "Almost done. Check your email and click the link to confirm your signature. It can take a minute, and may land in spam.", "ok");
+      store("dvi-pending-"+pid, email); renderPetDetail();
+      const pd = $("#pet-form-wrap .pending"); if(pd) pd.focus();
     } else throw { code:"offline" };
   }catch(e){
     const c = e && e.code;
@@ -1381,7 +1390,11 @@ async function boot(){
       if(location.hash === "#admin") route(true);
     }
   } else if(CONFIG.API){
-    S.mode = "api"; renderPetDetail(); mountTurnstile("ct-ts");
+    S.mode = "api";
+    try{ const q = new URLSearchParams(location.search), sp = q.get("signed");
+      if(sp && PETS.some(p => p.id===sp)){ store("dvi-signed-"+sp, "1"); try{ localStorage.removeItem("dvi-pending-"+sp); }catch(e){} petI = PETS.findIndex(p => p.id===sp); renderPetList();
+        q.delete("signed"); history.replaceState(null, "", location.pathname + (q.toString() ? "?"+q : "") + location.hash); } }catch(e){}
+    renderPetDetail(); mountTurnstile("ct-ts");
     try{ await loadSheet(); }catch(e){ setStatus($("#backend-note"), "Live counts couldn’t load just now. You can still sign.", ""); }
   } else {
     setStatus($("#backend-note"), "Signing opens soon on this copy of the site.", "");

@@ -177,12 +177,13 @@ async function sign(req, env, ctx) {
 
 async function confirm(req, env) {
   const t = clean(new URL(req.url).searchParams.get("t"), 64);
-  let msg = "This confirmation link isn’t valid or has already been used.", ok = false;
+  let msg = "This confirmation link isn’t valid or has already been used.", ok = false, pet = "";
   if (/^[0-9a-f]{48}$/.test(t)) {
-    const r = await env.DB.prepare("UPDATE signatures SET status='confirmed', token=NULL, confirmed_at=? WHERE token=? AND status='pending'").bind(now(), t).run();
-    if (r.meta && r.meta.changes) { ok = true; msg = "Thank you. Your signature is confirmed and now counts."; await caches.default.delete(new Request(CACHE_KEY)); }
+    const r = await env.DB.prepare("UPDATE signatures SET status='confirmed', token=NULL, confirmed_at=? WHERE token=? AND status='pending' RETURNING petition").bind(now(), t).first();
+    if (r && r.petition) { ok = true; pet = r.petition; msg = "Thank you. Your signature is confirmed and now counts."; await caches.default.delete(new Request(CACHE_KEY)); }
   }
-  return html(page("Signature confirmation", `<h1>${ok ? "You’re counted" : "Link not valid"}</h1><p>${esc(msg)}</p><p><a href="https://disability-visibility.com/#act">Back to the petitions</a></p>`), ok ? 200 : 400);
+  const back = "https://disability-visibility.com/" + (pet ? "?signed=" + encodeURIComponent(pet) : "") + "#act";
+  return html(page("Signature confirmation", `<h1>${ok ? "You’re counted" : "Link not valid"}</h1><p>${esc(msg)}</p><p><a href="${esc(back)}">Back to the petition</a></p>`), ok ? 200 : 400);
 }
 
 async function contact(req, env, ctx) {
