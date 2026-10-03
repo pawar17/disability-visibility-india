@@ -13,7 +13,7 @@ routes = [
 [[d1_databases]]
 binding = "DB"
 database_name = "dvi"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "e7750495-f18e-41ab-bf2e-b867baa0face"
 
 [vars]
 SITE_ORIGINS = "https://disability-visibility.com,https://www.disability-visibility.com,https://pawar17.github.io"
