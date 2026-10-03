@@ -241,15 +241,21 @@ async function accessEmail(req, env) {
   if (pay.iss !== `https://${env.ACCESS_TEAM}.cloudflareaccess.com`) return null;
   if (!pay.exp || pay.exp * 1000 < Date.now()) return null;
   const email = String(pay.email || "").toLowerCase();
-  const allowed = String(env.ADMIN_EMAILS || "").toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
-  return allowed.includes(email) ? email : null;
+  return (await isOwnerEmail(env, email)) ? email : null;
 }
 
 const csvCell = v => { let s = String(v == null ? "" : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
 
 /* Email sign-in: a one-time link sent only to addresses in ADMIN_EMAILS. */
 const SESSION_COOKIE = "__Host-dvi_admin";
+// Defence in depth: even if the ADMIN_EMAILS setting is changed, only the owner's address works.
+// Stored as a SHA-256 hash so the email isn't published in this public repo.
+const OWNER_EMAIL_SHA256 = "7151aa6c34748392ab0f32b5275ff211e332fc7e78d955c7000279cbffbe5716";
 const adminList = env => String(env.ADMIN_EMAILS || "").toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
+async function isOwnerEmail(env, email) {
+  email = String(email || "").toLowerCase().trim();
+  return !!email && adminList(env).includes(email) && (await sha256(email)) === OWNER_EMAIL_SHA256;
+}
 function cookie(req, name) {
   const c = req.headers.get("Cookie") || "";
   for (const part of c.split(/;\s*/)) { const i = part.indexOf("="); if (i > 0 && part.slice(0, i) === name) return part.slice(i + 1); }
@@ -260,7 +266,7 @@ async function sessionEmail(req, env) {
   if (!/^[0-9a-f]{64}$/.test(id)) return null;
   const row = await env.DB.prepare("SELECT email, expires_at FROM admin_sessions WHERE id_hash=?").bind(await sha256(id)).first();
   if (!row || row.expires_at < now()) return null;
-  return adminList(env).includes(row.email) ? row.email : null;
+  return (await isOwnerEmail(env, row.email)) ? row.email : null;
 }
 const LOGIN_CSP = { "Referrer-Policy": "same-origin", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" };
 function loginPage(msg) {
@@ -288,7 +294,7 @@ async function adminAuth(req, env, url) {
     await env.DB.prepare("INSERT INTO admin_login_attempts (ip_hash, at) VALUES (?,?)").bind(ipHash, now()).run();
     const fd = await req.formData().catch(() => null);
     const email = clean(fd && fd.get("email"), 120).toLowerCase();
-    if (adminList(env).includes(email) && env.RESEND_API_KEY) {
+    if ((await isOwnerEmail(env, email)) && env.RESEND_API_KEY) {
       const t = token() + token().slice(0, 16);
       await env.DB.prepare("INSERT INTO admin_links (token_hash, email, expires_at) VALUES (?,?,?)").bind(await sha256(t), email, new Date(Date.now() + 10 * 60e3).toISOString()).run();
       try { await sendMail(env, email, "Your admin sign-in link", `Open this link within 10 minutes to sign in to the Disability Visibility India admin page:\n${url.origin}/auth?t=${t}\n\nIf you didn't ask for this, ignore this email.`); } catch {}
@@ -306,7 +312,7 @@ async function adminAuth(req, env, url) {
     const t = clean(fd && fd.get("t"), 80);
     const h = await sha256(t);
     const r = await env.DB.prepare("UPDATE admin_links SET used=1 WHERE token_hash=? AND used=0 AND expires_at>? RETURNING email").bind(h, now()).first();
-    if (!r || !adminList(env).includes(r.email)) return loginPage("That link has expired or was already used. Request a new one.");
+    if (!r || !(await isOwnerEmail(env, r.email))) return loginPage("That link has expired or was already used. Request a new one.");
     const id = token() + token().slice(0, 16);
     await env.DB.batch([
       env.DB.prepare("DELETE FROM admin_sessions WHERE expires_at<?").bind(now()),
