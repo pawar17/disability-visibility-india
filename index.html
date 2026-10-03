@@ -288,7 +288,7 @@ form.f{display:grid;gap:.6rem}
 .status.bad{color:var(--bad);font-weight:600}
 .wall{display:flex;flex-wrap:wrap;gap:.35rem;font-size:.85rem}
 .wall span{background:var(--surface);border:1px solid var(--line);padding:.25rem .5rem;border-radius:5px}
-.thanks{background:var(--ok);color:var(--paper);padding:.8rem 1rem;border-radius:8px;font-weight:600}
+.thanks{background:var(--ok);color:var(--paper);padding:1rem 1.1rem;border-radius:8px;font-weight:450;line-height:1.5}.thanks strong{font-size:1.15rem;font-weight:700;display:inline-block;margin-bottom:.25rem}
 
 /* give */
 .give-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:2.5rem;align-items:start}
@@ -1173,7 +1173,7 @@ function renderPetDetail(){
       </div>
     </article>`;
   const pend = S.mode==="api" && !signedHere(p.id) ? store("dvi-pending-"+p.id) : null;
-  $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<p class="thanks">You’ve signed this petition. Thank you.</p>` : pend ? `
+  $("#pet-form-wrap").innerHTML = signedHere(p.id) ? `<div class="thanks" tabindex="-1"><strong>Thank you for signing and making your voice count.</strong><br>Your signature is confirmed. Share this petition so more people can add their names.</div>` : pend ? `
     <div class="pending" tabindex="-1">
       <h3>Check your email to finish signing</h3>
       <p>We sent a confirmation link to <strong>${esc(pend)}</strong>. Your signature counts once you click it. It can take a minute, and may land in spam or promotions.</p>
@@ -1393,8 +1393,9 @@ async function boot(){
     S.mode = "api";
     try{ const q = new URLSearchParams(location.search), sp = q.get("signed");
       if(sp && PETS.some(p => p.id===sp)){ store("dvi-signed-"+sp, "1"); try{ localStorage.removeItem("dvi-pending-"+sp); }catch(e){} petI = PETS.findIndex(p => p.id===sp); renderPetList();
-        q.delete("signed"); history.replaceState(null, "", location.pathname + (q.toString() ? "?"+q : "") + location.hash); } }catch(e){}
+        q.delete("signed"); history.replaceState(null, "", location.pathname + (q.toString() ? "?"+q : "") + location.hash); S.justSigned = true; } }catch(e){}
     renderPetDetail(); mountTurnstile("ct-ts");
+    if(S.justSigned){ setTimeout(() => { const t = $("#pet-form-wrap .thanks"); if(t){ t.scrollIntoView({block:"center"}); t.focus({preventScroll:true}); } }, 300); }
     try{ await loadSheet(); }catch(e){ setStatus($("#backend-note"), "Live counts couldn’t load just now. You can still sign.", ""); }
   } else {
     setStatus($("#backend-note"), "Signing opens soon on this copy of the site.", "");

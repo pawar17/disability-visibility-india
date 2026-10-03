@@ -180,10 +180,10 @@ async function confirm(req, env) {
   let msg = "This confirmation link isn’t valid or has already been used.", ok = false, pet = "";
   if (/^[0-9a-f]{48}$/.test(t)) {
     const r = await env.DB.prepare("UPDATE signatures SET status='confirmed', token=NULL, confirmed_at=? WHERE token=? AND status='pending' RETURNING petition").bind(now(), t).first();
-    if (r && r.petition) { ok = true; pet = r.petition; msg = "Thank you. Your signature is confirmed and now counts."; await caches.default.delete(new Request(CACHE_KEY)); }
+    if (r && r.petition) { ok = true; pet = r.petition; msg = "Your signature is confirmed and now counts."; await caches.default.delete(new Request(CACHE_KEY)); }
   }
   const back = "https://disability-visibility.com/" + (pet ? "?signed=" + encodeURIComponent(pet) : "") + "#act";
-  return html(page("Signature confirmation", `<h1>${ok ? "You’re counted" : "Link not valid"}</h1><p>${esc(msg)}</p><p><a href="${esc(back)}">Back to the petition</a></p>`), ok ? 200 : 400);
+  return html(page("Signature confirmation", `<h1>${ok ? "Thank you for signing and making your voice count." : "Link not valid"}</h1><p>${esc(msg)}${ok ? " Taking you back to the petition…" : ""}</p><p><a href="${esc(back)}">Back to the petition</a></p>`), ok ? 200 : 400, ok ? { "Refresh": "3; url=" + back } : {});
 }
 
 async function contact(req, env, ctx) {
