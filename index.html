@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Disability Visibility India</title>
+<meta name="color-scheme" content="light">
 <meta name="description" content="A toolkit, news desk and action hub for disabled people and families in India.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disability Visibility India">
@@ -29,13 +30,8 @@
   --f-deva:"Kohinoor Devanagari","Noto Sans Devanagari","Nirmala UI",-apple-system,sans-serif;
   --sos-bg:#FCEBEA; --sos-ink:#A3231B;
   --base:17px; --r:10px;
+  color-scheme:light; /* one warm brand look in every mode */
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#16151B; --surface:#201F26; --sunk:#2A2931; --ink:#F7F3EA; --muted:#CFCAD3; --line:#3A3842; --sos-bg:#2E1513; --sos-ink:#FFB4AB;
-  --blue:#FF9C90; --blue-ink:#16151B; --ok:#6FD39E; --bad:#FF9A90; --alert:#C9372C; --focus:#F2B21B; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#16151B; --surface:#201F26; --sunk:#2A2931; --ink:#F7F3EA; --muted:#CFCAD3; --line:#3A3842; --sos-bg:#2E1513; --sos-ink:#FFB4AB;
-  --blue:#FF9C90; --blue-ink:#16151B; --ok:#6FD39E; --bad:#FF9A90; --alert:#C9372C; --focus:#F2B21B; color-scheme:dark}
 
 *{box-sizing:border-box}
 html{font-size:var(--base)}
